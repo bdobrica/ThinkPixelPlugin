@@ -1,0 +1,43 @@
+services:
+  wordpress-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../../thinkpixel-search-rag:/opt/wordpress/wp-content/plugins/thinkpixel-search-rag
+      - ../../tests:/opt/tests/plugins/thinkpixel-search-rag/tests
+      - ./phpunit.xml:/opt/tests/phpunit.xml
+      - ./autoload.php:/opt/tests/autoload.php
+    depends_on:
+      - mariadb
+    ports:
+      - "8000:80"
+    networks:
+      - wordpress
+
+  mariadb:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    ports:
+      - "3306:3306"
+    networks:
+      - wordpress
+
+volumes:
+  db_data:
+
+
+networks:
+  wordpress:

@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 0.1.0
+ * @version 0.1.1
  */
 class Strings
 {
@@ -26,7 +26,7 @@ class Strings
     /**
      * The version of the plugin.
      */
-    const PluginVersion = '0.1.0';
+    const PluginVersion = '0.1.1';
 
     /**
      * The plugin identifier.
@@ -42,6 +42,11 @@ class Strings
      * The name of the database table used by the plugin.
      */
     const PageLogTable = "thinkpixel_page_log";
+
+    /**
+     * The name of the database table used for caching search results.
+     */
+    const SearchCacheTable = "thinkpixel_search_cache";
 
     /**
      * The base URL for the ThinkPixel API.

@@ -1,74 +1,241 @@
-jQuery(document).ready(function ($) {
-    function checkAPIHealth() {
-        $.ajax({
-            url: thinkpixelSettings.ping_url,
-            type: 'POST',
-            headers: {
-                'X-WP-Nonce': thinkpixelSettings.wp_rest_nonce
-            },
-            success: function (response) {
-                console.log(response);
-                if (response.status === "ok" && response.version) {
-                    $('#thinkpixel-api-status').text('OK');
-                    $('#thinkpixel-api-version').text(response.version);
-                } else {
-                    $('#thinkpixel-api-status').text('Error');
-                    $('#thinkpixel-api-version').text('-');
+jQuery(document).ready(async function ($) {
+    // Check the API health
+    const $apiStatus = $('#thinkpixel-api-status');
+    const $apiVersion = $('#thinkpixel-api-version');
+
+    // Function to check the API health
+    async function checkAPIHealth() {
+        try {
+            const response = await $.ajax({
+                url: thinkpixelSettings.ping_url,
+                type: 'POST',
+                headers: {
+                    'X-WP-Nonce': thinkpixelSettings.wp_rest_nonce
                 }
-            },
-            error: function () {
-                $('#thinkpixel-api-status').text('Error');
-                $('#thinkpixel-api-version').text('-');
+            });
+
+            if (response.status === "ok" && response.version) {
+                $apiStatus.text('OK');
+                $apiVersion.text(response.version);
+            } else {
+                $apiStatus.text('Error');
+                $apiVersion.text('-');
             }
-        });
+        } catch (error) {
+            $apiStatus.text('Error');
+            $apiVersion.text('-');
+        }
     }
 
-    // Check once on page load
-    checkAPIHealth();
+    // Function to periodically check the API health every 20 seconds
+    async function checkAPIHealthPeriodically() {
+        await checkAPIHealth();
+        setTimeout(checkAPIHealthPeriodically, 20000);
+    }
 
-    // Check every 20 seconds
-    setInterval(checkAPIHealth, 20000);
+    // If the API status and version elements exist, check the API health every 20 seconds
+    if ($apiStatus.length && $apiVersion.length) {
+        // Check once on page load and then periodically
+        await checkAPIHealthPeriodically();
+    }
 
+    // Skip Search
+    const $skipSearchButton = $('#thinkpixel-skip-search-btn');
+    const $skipSearchResetButton = $('#thinkpixel-skip-reset-btn');
+    const $skipSearchTextInput = $('#thinkpixel-skip-search');
+    const $skipSearchForm = $('thinkpixel-skip-form');
+    const $skipSearchTableBody = $('#thinkpixel-skip-results tbody');
+    const $skipSearchPagination = $('#thinkpixel-skip-pagination');
+    const $skipIdsInput = $('#thinkpixel-skip-ids-field');
+    let skippedIdsCache = [];
 
-    $('#thinkpixel-skip-search-btn').on('click', function () {
-        let query = $('#thinkpixel-skip-search').val();
+    // Function to display pagination for skip search results
+    function displaySkipSearchPagination(query, data, $pagination) {
+        const offset = data.offset;
+        const count = data.count;
+        const limit = data.limit;
+
+        const totalPages = Math.ceil(count / limit);
+
+        console.log('Total pages: ' + totalPages);
+
+        if (totalPages < 2) {
+            $pagination.html('').hide();
+            return;
+        }
+
+        const currentPage = Math.floor(offset / limit) + 1;
+
+        let linksHtml = '<ul class="pagination" style="float: right;">';
+
+        if (offset > 0) {
+            linksHtml += '<li class="page-item"><a class="page-link" href="#" data-offset="' + (offset - limit) + '">&laquo;</a></li>';
+        }
+
+        if (totalPages <= 9) {
+            for (let i = 1; i <= totalPages; i++) {
+                linksHtml += '<li class="page-item' + (i === currentPage ? ' active' : '') + '"><a class="page-link" href="#" data-offset="' + ((i - 1) * limit) + '">' + i + '</a></li>';
+            }
+        } else {
+            if (currentPage <= 3) {
+                for (let i = 1; i <= 5; i++) {
+                    linksHtml += '<li class="page-item' + (i === currentPage ? ' active' : '') + '"><a class="page-link" href="#" data-offset="' + ((i - 1) * limit) + '">' + i + '</a></li>';
+                }
+                linksHtml += '<li class="page-item"><span class="page-link">...</span></li>';
+                linksHtml += '<li class="page-item"><a class="page-link" href="#" data-offset="' + ((totalPages - 2) * limit) + '">' + (totalPages - 1) + '</a></li>';
+                linksHtml += '<li class="page-item"><a class="page-link" href="#" data-offset="' + ((totalPages - 1) * limit) + '">' + totalPages + '</a></li>';
+            } else if (currentPage > totalPages - 3) {
+                linksHtml += '<li class="page-item"><a class="page-link" href="#" data-offset="0">1</a></li>';
+                linksHtml += '<li class="page-item"><a class="page-link" href="#" data-offset="' + limit + '">2</a></li>';
+                linksHtml += '<li class="page-item"><span class="page-link">...</span></li>';
+                for (let i = totalPages - 4; i <= totalPages; i++) {
+                    linksHtml += '<li class="page-item' + (i === currentPage ? ' active' : '') + '"><a class="page-link" href="#" data-offset="' + ((i - 1) * limit) + '">' + i + '</a></li>';
+                }
+            } else {
+                linksHtml += '<li class="page-item"><a class="page-link" href="#" data-offset="0">1</a></li>';
+                linksHtml += '<li class="page-item"><a class="page-link" href="#" data-offset="' + limit + '">2</a></li>';
+                linksHtml += '<li class="page-item"><span class="page-link">...</span></li>';
+                for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+                    linksHtml += '<li class="page-item' + (i === currentPage ? ' active' : '') + '"><a class="page-link" href="#" data-offset="' + ((i - 1) * limit) + '">' + i + '</a></li>';
+                }
+                linksHtml += '<li class="page-item"><span class="page-link">...</span></li>';
+                linksHtml += '<li class="page-item"><a class="page-link" href="#" data-offset="' + ((totalPages - 2) * limit) + '">' + (totalPages - 1) + '</a></li>';
+                linksHtml += '<li class="page-item"><a class="page-link" href="#" data-offset="' + ((totalPages - 1) * limit) + '">' + totalPages + '</a></li>';
+            }
+        }
+
+        if (offset + limit < count) {
+            linksHtml += '<li class="page-item"><a class="page-link" href="#" data-offset="' + (offset + limit) + '">&raquo;</a></li>';
+        }
+
+        linksHtml += '</ul>';
+
+        $pagination
+            .html(linksHtml)
+            .show()
+            // Pagination links click event
+            .find('a').on('click', async function (e) {
+                e.preventDefault();
+                const offset = $(this).data('offset');
+                updateSkippedIdsCache();
+                await loadSkipSearch(query, offset);
+            });
+    }
+
+    // Function to display skip search items in the table
+    function displaySkipSearchItems(data, $tableBody) {
+        const posts = data.results;
+
+        let rowsHtml = '';
+        $.each(posts, function (index, item) {
+            const postId = item.ID;
+            const title = item.post_title;
+            const skipFlag = item.skip_flag;
+            const processedFlag = item.processed_flag;
+            const lastUpdated = item.last_updated;
+
+            rowsHtml += '<tr>' +
+                '<th class="check-column"><input type="checkbox" value="' + postId + '"' + (skipFlag ? ' checked' : '') + '></th>' +
+                '<td>' + title + '</td>' +
+                '<td><input type="checkbox" readonly disabled' + (processedFlag ? ' checked' : '') + '></td>' +
+                '<td>' + lastUpdated + '</td>' +
+                '</tr>';
+        });
+        $tableBody.html(rowsHtml);
+    }
+
+    // Function to load skip search results
+    async function loadSkipSearch(query, offset) {
+        try {
+            const response = await $.ajax({
+                url: thinkpixelSettings.skip_search_url,
+                method: 'POST',
+                headers: {
+                    'X-WP-Nonce': thinkpixelSettings.wp_rest_nonce
+                },
+                dataType: 'json',
+                data: {
+                    query: query,
+                    offset: offset
+                }
+            });
+
+            if (response.success) {
+                displaySkipSearchItems(response.data, $skipSearchTableBody);
+                displaySkipSearchPagination(query, response.data, $skipSearchPagination);
+            }
+        } catch (error) {
+            console.log('Error searching pages/posts');
+        }
+    }
+
+    // Function to update the cache of skipped IDs
+    function updateSkippedIdsCache() {
+        skippedIdsCache = [];
+        $skipSearchTableBody.find('input[name="skip_ids[]"]:checked').each(function () {
+            skippedIdsCache.push($(this).val());
+        });
+        $skipSearchTableBody.find('input[name="skip_ids[]"]:not(:checked)').each(function () {
+            const postId = $(this).val();
+            const index = skippedIdsCache.indexOf(postId);
+            if (index > -1) {
+                skippedIdsCache.splice(index, 1);
+            }
+        });
+        $skipIdsInput.val(JSON.stringify(skippedIdsCache));
+    }
+
+    // Debounce function to limit the rate at which a function can fire.
+    function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+            const context = this;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    }
+
+    // Search button click event
+    $skipSearchButton.on('click', debounce(async function () {
+        const query = $('#thinkpixel-skip-search').val();
         if (query.length < 2) {
             alert('Please enter at least 2 characters.');
             return;
         }
+        skippedIdsCache = [];
+        await loadSkipSearch(query, 0);
+    }, 300));
 
-        $.ajax({
-            url: thinkpixelSettings.skip_search_url,
-            method: 'POST',
-            headers: {
-                'X-WP-Nonce': thinkpixelSettings.wp_rest_nonce
-            },
-            dataType: 'json',
-            data: {
-                query: query
-            },
-            success: function (response) {
-                if (response.success) {
-                    let rowsHtml = '';
-                    $.each(response.data, function (index, item) {
-                        rowsHtml += '<tr>' +
-                            '<th class="check-column"><input type="checkbox" name="skip_ids[]" value="' + item.post_id + '"></th>' +
-                            '<td>' + item.title + '</td>' +
-                            '<td>' + (item.skip_flag ? 'Skipped' : 'Not skipped') + '</td>' +
-                            '</tr>';
-                    });
-                    $('#thinkpixel-skip-results tbody').html(rowsHtml);
-                }
-            },
-            error: function () {
-                console.log('Error searching pages/posts');
-            }
-        });
+    // Search input keyup event
+    $skipSearchTextInput.on('keyup', debounce(async function () {
+        const query = $(this).val();
+        if (query.length < 2) {
+            return;
+        }
+        skippedIdsCache = [];
+        await loadSkipSearch(query, 0);
+    }, 300));
+
+    // Load initial data
+    if ($skipSearchTableBody.length && $skipSearchPagination.length) {
+        skippedIdsCache = [];
+        await loadSkipSearch('', 0);
+    }
+
+    // Reset button click event
+    $skipSearchResetButton.on('click', async function () {
+        skippedIdsCache = [];
+        await loadSkipSearch('', 0);
+    });
+
+    // Update cache on form submit
+    $skipSearchForm.on('submit', function (e) {
+        updateSkippedIdsCache();
     });
 
     // Check/uncheck all
     $('#thinkpixel-skip-check-all').on('click', function () {
-        let checked = $(this).prop('checked');
+        const checked = $(this).prop('checked');
         $('#thinkpixel-skip-results tbody input[type="checkbox"]').prop('checked', checked);
     });
 
@@ -83,8 +250,8 @@ jQuery(document).ready(function ($) {
 
     // Called after each request to update UI (progress bar, status message, button states)
     function updateProgress(processedCount, unprocessedCount) {
-        let total = processedCount + unprocessedCount;
-        let percentage = total > 0 ? Math.round((processedCount / total) * 100) : 100;
+        const total = processedCount + unprocessedCount;
+        const percentage = total > 0 ? Math.round((processedCount / total) * 100) : 100;
 
         $progressBar.css('width', percentage + '%');
         $progressBar.text(percentage + '%');
@@ -93,6 +260,7 @@ jQuery(document).ready(function ($) {
         );
     }
 
+    // Function to perform bulk indexing
     async function doBulkIndexing() {
         try {
             // Disable button during processing
@@ -123,8 +291,8 @@ jQuery(document).ready(function ($) {
                     throw new Error('Bulk processing API returned an error');
                 }
 
-                let processedCount = data.processed_count;
-                let unprocessedCount = data.unprocessed_count;
+                const processedCount = data.processed_count;
+                const unprocessedCount = data.unprocessed_count;
 
                 // Update progress bar
                 updateProgress(processedCount, unprocessedCount);
@@ -150,7 +318,5 @@ jQuery(document).ready(function ($) {
     }
 
     // On button click, start the indexing process
-    $bulkIndexButton.on('click', function () {
-        doBulkIndexing();
-    });
+    $bulkIndexButton.on('click', doBulkIndexing);
 });

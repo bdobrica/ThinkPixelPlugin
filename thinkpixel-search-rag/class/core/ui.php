@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 0.1.0
+ * @version 0.1.1
  */
 class UI
 {
@@ -139,6 +139,14 @@ class UI
             array('jquery'),
             Strings::PluginVersion,
             true
+        );
+
+        // Enqueue styles for the settings page.
+        wp_enqueue_style(
+            Strings::SettingsJS,
+            $this->plugin_dir_url . 'assets/css/admin.css',
+            array(),
+            Strings::PluginVersion
         );
 
         // Localize script to pass any necessary data or nonce

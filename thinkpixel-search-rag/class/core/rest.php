@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 0.1.0
+ * @version 0.1.1
  */
 class Rest
 {
@@ -275,51 +275,18 @@ class Rest
     public function handle_skip_search(\WP_REST_Request $request): \WP_REST_Response
     {
         $query = sanitize_text_field($request->get_param('query'));
+        $offset = intval($request->get_param('offset') ?? 0);
+        $limit = intval($request->get_param('limit') ?? 10);
 
         if (strlen($query) < 2) {
-            return new \WP_REST_Response([
-                'success' => 'error',
-                'message' => 'Query must be at least 2 characters long'
-            ], 400);
+            $query = '';
         }
 
-        global $wpdb;
-        // Basic search in posts
-        $sql = $wpdb->prepare("
-        SELECT ID, post_title 
-        FROM {$wpdb->posts}
-        WHERE post_title LIKE %s
-          AND post_status = 'publish'
-          AND (post_type = 'post' OR post_type = 'page')
-        LIMIT 50
-    ", '%' . $wpdb->esc_like($query) . '%');
-
-        $results = $wpdb->get_results($sql);
-        if (! $results) {
-            return new \WP_REST_Response([
-                'success' => 'ok',
-                'message' => 'No results found'
-            ], 200);
-        }
-
-        $table_name = $wpdb->prefix . 'thinkpixel_page_log';
-        $data = array();
-
-        foreach ($results as $post) {
-            // Check if skip_flag is set
-            $row = $wpdb->get_row($wpdb->prepare("SELECT skip_flag FROM $table_name WHERE post_id = %d", $post->ID));
-            $skip_flag = $row ? (bool)$row->skip_flag : false;
-
-            $data[] = array(
-                'post_id' => $post->ID,
-                'title'   => $post->post_title,
-                'skip_flag' => $skip_flag
-            );
-        }
+        $data = $this->db->get_posts_skip_status_by_keyword($query, $limit, $offset);
 
         return new \WP_REST_Response([
             'success' => 'ok',
-            'data' => $data
+            'data' => $data,
         ], 200);
     }
 

@@ -20,7 +20,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 0.1.0
+ * @version 0.1.1
  */
 class Api
 {

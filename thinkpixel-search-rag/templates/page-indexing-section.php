@@ -6,11 +6,11 @@ namespace ThinkPixel\Core;
 <table class="form-table">
     <tr>
         <th scope="row"><?php esc_html_e('Indexed Pages', Strings::Domain); ?></th>
-        <td><?php echo esc_html($processed_count); ?></td>
+        <td id="thinkpixel-processed-count"><?php echo esc_html($processed_count); ?></td>
     </tr>
     <tr>
         <th scope="row"><?php esc_html_e('Remaining Pages', Strings::Domain); ?></th>
-        <td><?php echo esc_html($remaining_count); ?></td>
+        <td id="thinkpixel-remaining-count"><?php echo esc_html($remaining_count); ?></td>
     </tr>
 </table>
 

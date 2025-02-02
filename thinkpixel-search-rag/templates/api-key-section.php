@@ -18,9 +18,12 @@ namespace ThinkPixel\Core;
             <th scope="row"><?php esc_html_e('Current API Key', Strings::Domain); ?></th>
             <td>
                 <?php if (! empty($api_key)) : ?>
-                    <input type="text" readonly value="<?php echo esc_attr($api_key); ?>" size="50" />
+                    <input type="text" readonly value="<?php echo esc_attr($api_key); ?>" size="40" />
                 <?php else : ?>
-                    <p><?php esc_html_e('No API Key found. Please generate one.', Strings::Domain); ?></p>
+                    <input type="text" value="" size="40" />
+                    <button type="submit" name="thinkpixel_update_api_key" class="button button-primary">
+                        <?php esc_html_e('Save API Key', Strings::Domain); ?>
+                    </button>
                 <?php endif; ?>
             </td>
         </tr>

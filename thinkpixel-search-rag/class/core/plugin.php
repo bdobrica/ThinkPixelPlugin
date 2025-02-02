@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 0.1.0
+ * @version 0.1.1
  */
 class Plugin
 {
@@ -78,7 +78,7 @@ class Plugin
     private function register_activation_hook(): void
     {
         register_activation_hook($this->plugin_file_path, function () {
-            $this->db->create_table();
+            $this->db->create_tables();
             $this->db->sync_posts_to_log();
             $this->cron->schedule_cron_job();
             $this->register_site();
@@ -93,7 +93,7 @@ class Plugin
     private function register_deactivation_hook(): void
     {
         register_deactivation_hook($this->plugin_file_path, function () {
-            $this->db->drop_table();
+            $this->db->drop_tables();
             $this->cron->unschedule_cron_job();
             $this->api->cleanup();
             $this->settings->cleanup();
@@ -126,7 +126,11 @@ class Plugin
             $query->set('s', ''); // Clear the search query.
 
             // Call the ThinkPixel API.
-            $result = $this->api->do_search($search_query);
+            $result = $this->db->get_cached_search_results($search_query);
+            if (is_null($result)) {
+                $result = $this->api->do_search($search_query);
+                $this->db->cache_search_results($search_query, $result);
+            }
 
             // Extract post IDs from the response.
             $data = $result['results'] ?? [];

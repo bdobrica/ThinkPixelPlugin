@@ -4,7 +4,7 @@ Plugin Name: ThinkPixel Search and RAG Plugin
 Plugin URI: https://thinkpixel.io/
 Description: ThinkPixel Search and RAG Plugin
 Author: Bogdan Dobrica
-Version: 0.1.0
+Version: 0.1.1
 Author URI: https://ublo.ro/
 */
 

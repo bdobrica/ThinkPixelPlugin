@@ -14,16 +14,18 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 0.1.0
+ * @version 0.1.1
  */
 class Db
 {
     private $wpdb; // WordPress Database Object
+    private $cache_expiry_time; // Cache expiry time in seconds
 
     public function __construct()
     {
         global $wpdb;
         $this->wpdb = $wpdb;
+        $this->cache_expiry_time = 3600; // 1 hour
     }
 
     /**
@@ -37,15 +39,27 @@ class Db
     }
 
     /**
-     * Create the post logs table.
+     * Get the table name for search cache.
+     *
+     * @return string
+     */
+    public function get_search_cache_table_name(): string
+    {
+        return $this->wpdb->prefix . Strings::SearchCacheTable;
+    }
+
+    /**
+     * Create the necessary tables.
      *
      * @return void
      */
-    public function create_table(): void
+    public function create_tables(): void
     {
         $charset_collate = $this->wpdb->get_charset_collate();
 
-        $sql = 'CREATE TABLE `' . $this->get_post_logs_table_name() . '` (
+        $queries = [
+            // SQL for creating the post logs table.
+            'CREATE TABLE `' . $this->get_post_logs_table_name() . '` (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             post_id BIGINT(20) UNSIGNED NOT NULL,
             skip_flag BOOLEAN DEFAULT FALSE,
@@ -53,10 +67,34 @@ class Db
             last_updated DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
             UNIQUE KEY post_id (post_id)
-        ) ' . $charset_collate;;
+        ) ' . $charset_collate,
+            // SQL for creating the search cache table.
+            'CREATE TABLE `' . $this->get_search_cache_table_name() . '` (
+            search_hash CHAR(64) PRIMARY KEY,
+            search_query TEXT NOT NULL,
+            results LONGTEXT NOT NULL,
+            expires_at DATETIME NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ' . $charset_collate
+        ];
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
+        dbDelta($queries);
+    }
+
+    /**
+     * Drop the necessary tables.
+     *
+     * @return void
+     */
+    public function drop_tables(): void
+    {
+        $tables = [
+            $this->get_post_logs_table_name(),
+            $this->get_search_cache_table_name()
+        ];
+        $sql = 'DROP TABLE IF EXISTS `' . implode('`, `', $tables) . '`';
+        $this->wpdb->query($sql);
     }
 
     /**
@@ -203,7 +241,7 @@ class Db
     public function get_posts_skip_status_by_keyword(string $keyword = '', int $limit = -1, int $offset = 0): array
     {
         // Base SQL query
-        $sql = "SELECT p.ID, p.post_title, l.skip_flag
+        $sql = "SELECT p.ID, p.post_title, l.skip_flag, l.processed_flag, l.last_updated
                 FROM `" . $this->get_post_logs_table_name() . "` l
                 JOIN `" . $this->wpdb->posts . "` p
                 ON l.post_id = p.ID";
@@ -213,11 +251,24 @@ class Db
             $sql .= $this->wpdb->prepare(" WHERE p.post_title LIKE %s", '%' . $this->wpdb->esc_like($keyword) . '%');
         }
 
+        $count_sql = "SELECT COUNT(1) FROM (" . $sql . ") as count_table";
+        $count = (int) $this->wpdb->get_var($count_sql);
+
         // Add pagination
         if ($limit > 0)
             $sql .= $this->wpdb->prepare(" LIMIT %d OFFSET %d", $limit, $offset);
+        $results = $this->wpdb->get_results($sql, ARRAY_A);
 
-        return $this->wpdb->get_results($sql, ARRAY_A);
+
+        $count = 400;
+        $limit = 10;
+
+        return [
+            'offset' => $offset,
+            'limit' => $limit,
+            'count' => $count,
+            'results' => $results
+        ];
     }
 
     /**
@@ -272,5 +323,64 @@ class Db
             'average_size' => (int) $results->average_size,
             'std_dev_size' => (int) $results->std_dev_size,
         ];
+    }
+
+    /**
+     * Cache search results.
+     *
+     * @param string $search_term The search term.
+     * @param array $search_results The search results.
+     * @return bool True if the record was saved, false otherwise.
+     */
+    public function cache_search_results(string $search_term, array $search_results): bool
+    {
+        // Hash the search term.
+        $search_hash = hash('sha256', $search_term);
+
+        // Prepare the data for insertion.
+        $data = [
+            'search_hash' => $search_hash,
+            'search_query' => $search_term,
+            'results' => json_encode($search_results),
+            'expires_at' => current_time('mysql', 1) + $this->cache_expiry_time,
+        ];
+
+        // Insert the data into the search cache table.
+        $inserted = $this->wpdb->insert(
+            $this->get_search_cache_table_name(),
+            $data,
+            ['%s', '%s', '%s', '%s']
+        );
+
+        // Delete expired entries.
+        $this->wpdb->query(
+            'DELETE FROM `' . $this->get_search_cache_table_name() . '` WHERE expires_at < NOW()'
+        );
+
+        return $inserted !== false;
+    }
+
+    /**
+     * Retrieve cached search results.
+     *
+     * @param string $search_term The search term.
+     * @return array|null The cached search results or null if not found.
+     */
+    public function get_cached_search_results(string $search_term): ?array
+    {
+        // Hash the search term.
+        $search_hash = hash('sha256', $search_term);
+
+        // Query the search cache table for the cached results.
+        $result = $this->wpdb->get_row(
+            $this->wpdb->prepare(
+                'SELECT results FROM `' . $this->get_search_cache_table_name() . '` WHERE search_hash = %s AND expires_at > NOW()',
+                $search_hash
+            ),
+            ARRAY_A
+        );
+
+        // Return the cached results if found, otherwise return null.
+        return $result ? json_decode($result['results'], true) : null;
     }
 }

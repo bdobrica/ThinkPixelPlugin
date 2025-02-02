@@ -20,7 +20,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 0.1.1
+ * @version 1.0.0
  */
 class Api
 {
@@ -174,9 +174,6 @@ class Api
      */
     public function do_search(string $search_query): array
     {
-        // Get the current site URL.
-        $site_url = get_site_url();
-
         // Call ThinkPixel API using POST.
         $start_time = microtime(true);
         $response = wp_remote_post(Strings::SearchEndpoint, [
@@ -205,6 +202,40 @@ class Api
         }
 
         return $data;
+    }
+
+    /**
+     * Refreshes the API key by calling the ThinkPixel API.
+     * 
+     * @return string|null The new API key or null if there was an error.
+     */
+    public function refresh_api_key(): ?string
+    {
+        $start_time = microtime(true);
+        $response = wp_remote_post(Strings::RefreshApiKeyEndpoint, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->get_jwt(),
+                'Content-Type' => 'application/json',
+            ],
+            'body' => json_encode([]),
+        ]);
+        $this->last_latency = microtime(true) - $start_time;
+
+        // Handle errors in the response.
+        if (is_wp_error($response)) {
+            error_log('Error calling ' . Strings::PluginName . ' API: ' . $response->get_error_message());
+            return null;
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        if (!isset($data['api_key'])) {
+            error_log('Invalid response from ' . Strings::PluginName . ' API.');
+            return null;
+        }
+
+        return $data['api_key'];
     }
 
     /**
@@ -284,6 +315,36 @@ class Api
         $body = wp_remote_retrieve_body($response);
         $json = json_decode($body, true);
         return new \WP_REST_Response($json, 200);
+    }
+
+    public function remove_posts_from_index(array $post_ids): array
+    {
+        // Call ThinkPixel API using POST.
+        $start_time = microtime(true);
+        $response = wp_remote_post(Strings::SearchEndpoint, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->get_jwt(),
+                'Content-Type' => 'application/json',
+            ],
+            'body' => json_encode([
+                'ids' => $post_ids,
+            ]),
+        ]);
+        $this->last_latency = microtime(true) - $start_time;
+
+        // Handle errors in the response.
+        if (is_wp_error($response)) {
+            error_log('Error calling ' . Strings::PluginName . ' API: ' . $response->get_error_message());
+            return [];
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        error_log('Remove posts from index response: ' . var_export($data, true));
+
+        // Maybe the API returns the IDs of the posts that were removed.
+        return $post_ids;
     }
 
     /**

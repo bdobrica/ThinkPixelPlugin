@@ -1,4 +1,29 @@
 jQuery(document).ready(async function ($) {
+    // Utils
+    function timeAgo(dateTimeStr) {
+        const inputDate = new Date(dateTimeStr.replace(" ", "T")); // Convert to ISO format
+        const now = new Date();
+        const diffMs = now - inputDate;
+        const diffMinutes = Math.floor(diffMs / 60000);
+
+        if (diffMinutes < 5) {
+            return thinkpixelSettings.text.now;
+        } else if (diffMinutes < 60) {
+            return `${diffMinutes} ${thinkpixelSettings.text.minutesAgo}`;
+        } else if (diffMinutes < 160) {
+            return thinkpixelSettings.text.hourAgo;
+        } else {
+            const inputDateStr = inputDate.toISOString().split('T')[0];
+            const nowDateStr = now.toISOString().split('T')[0];
+
+            if (inputDateStr === nowDateStr) {
+                return thinkpixelSettings.text.today;
+            } else {
+                return dateTimeStr;
+            }
+        }
+    }
+
     // Check the API health
     const $apiStatus = $('#thinkpixel-api-status');
     const $apiVersion = $('#thinkpixel-api-version');
@@ -15,14 +40,14 @@ jQuery(document).ready(async function ($) {
             });
 
             if (response.status === "ok" && response.version) {
-                $apiStatus.text('OK');
+                $apiStatus.text(thinkpixelSettings.text.ok);
                 $apiVersion.text(response.version);
             } else {
-                $apiStatus.text('Error');
+                $apiStatus.text(thinkpixelSettings.text.error);
                 $apiVersion.text('-');
             }
         } catch (error) {
-            $apiStatus.text('Error');
+            $apiStatus.text(thinkpixelSettings.text.error);
             $apiVersion.text('-');
         }
     }
@@ -43,7 +68,7 @@ jQuery(document).ready(async function ($) {
     const $skipSearchButton = $('#thinkpixel-skip-search-btn');
     const $skipSearchResetButton = $('#thinkpixel-skip-reset-btn');
     const $skipSearchTextInput = $('#thinkpixel-skip-search');
-    const $skipSearchForm = $('thinkpixel-skip-form');
+    const $skipSearchForm = $('#thinkpixel-skip-form');
     const $skipSearchTableBody = $('#thinkpixel-skip-results tbody');
     const $skipSearchPagination = $('#thinkpixel-skip-pagination');
     const $skipIdsInput = $('#thinkpixel-skip-ids-field');
@@ -56,8 +81,6 @@ jQuery(document).ready(async function ($) {
         const limit = data.limit;
 
         const totalPages = Math.ceil(count / limit);
-
-        console.log('Total pages: ' + totalPages);
 
         if (totalPages < 2) {
             $pagination.html('').hide();
@@ -130,12 +153,12 @@ jQuery(document).ready(async function ($) {
         $.each(posts, function (index, item) {
             const postId = item.ID;
             const title = item.post_title;
-            const skipFlag = item.skip_flag;
-            const processedFlag = item.processed_flag;
-            const lastUpdated = item.last_updated;
+            const skipFlag = parseInt(item.skip_flag);
+            const processedFlag = parseInt(item.processed_flag);
+            const lastUpdated = timeAgo(item.last_updated);
 
             rowsHtml += '<tr>' +
-                '<th class="check-column"><input type="checkbox" value="' + postId + '"' + (skipFlag ? ' checked' : '') + '></th>' +
+                '<th class="check-column"><input class="skip-ids" type="checkbox" value="' + postId + '"' + (skipFlag ? ' checked' : '') + '></th>' +
                 '<td>' + title + '</td>' +
                 '<td><input type="checkbox" readonly disabled' + (processedFlag ? ' checked' : '') + '></td>' +
                 '<td>' + lastUpdated + '</td>' +
@@ -172,10 +195,10 @@ jQuery(document).ready(async function ($) {
     // Function to update the cache of skipped IDs
     function updateSkippedIdsCache() {
         skippedIdsCache = [];
-        $skipSearchTableBody.find('input[name="skip_ids[]"]:checked').each(function () {
+        $skipSearchTableBody.find('input.skip-ids:checked').each(function () {
             skippedIdsCache.push($(this).val());
         });
-        $skipSearchTableBody.find('input[name="skip_ids[]"]:not(:checked)').each(function () {
+        $skipSearchTableBody.find('input.skip-ids:not(:checked)').each(function () {
             const postId = $(this).val();
             const index = skippedIdsCache.indexOf(postId);
             if (index > -1) {
@@ -199,7 +222,7 @@ jQuery(document).ready(async function ($) {
     $skipSearchButton.on('click', debounce(async function () {
         const query = $('#thinkpixel-skip-search').val();
         if (query.length < 2) {
-            alert('Please enter at least 2 characters.');
+            alert(thinkpixelSettings.text.minChars);
             return;
         }
         skippedIdsCache = [];
@@ -244,6 +267,8 @@ jQuery(document).ready(async function ($) {
     const $progressBar = $('#thinkpixel-bulk-progress-bar');
     const $statusMessage = $('#thinkpixel-bulk-status-message');
     const $progressContainer = $('#thinkpixel-bulk-progress-container');
+    const $processedCountCell = $('#thinkpixel-processed-count');
+    const $remainingCountCell = $('#thinkpixel-remaining-count');
 
     // Hide progress bar until needed
     $progressContainer.hide();
@@ -255,9 +280,9 @@ jQuery(document).ready(async function ($) {
 
         $progressBar.css('width', percentage + '%');
         $progressBar.text(percentage + '%');
-        $statusMessage.text(
-            'Processed: ' + processedCount + ' | Remaining: ' + unprocessedCount
-        );
+
+        $processedCountCell.text(processedCount);
+        $remainingCountCell.text(unprocessedCount);
     }
 
     // Function to perform bulk indexing
@@ -283,12 +308,12 @@ jQuery(document).ready(async function ($) {
 
                 if (!response.ok) {
                     // If the response is not 200-299, handle error
-                    throw new Error('Error calling bulk processing API');
+                    throw new Error(thinkpixelSettings.text.bulkRequestError);
                 }
 
                 const data = await response.json();
                 if (!data.success) {
-                    throw new Error('Bulk processing API returned an error');
+                    throw new Error(thinkpixelSettings.text.bulkResponseError);
                 }
 
                 const processedCount = data.processed_count;
@@ -307,10 +332,10 @@ jQuery(document).ready(async function ($) {
             }
 
             // Processing completed
-            $statusMessage.append(' - All done!');
+            $statusMessage.text(thinkpixelSettings.text.bulkSuccess);
         } catch (error) {
             console.error(error);
-            $statusMessage.text('An error occurred during bulk indexing: ' + error.message);
+            $statusMessage.text(thinkpixelSettings.text.bulkError + error.message);
         } finally {
             // Re-enable button
             $bulkIndexButton.prop('disabled', false);

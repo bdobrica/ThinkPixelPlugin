@@ -1,0 +1,45 @@
+name: Release WordPress Plugin
+
+on:
+  push:
+    paths:
+      - ".bumpversion.cfg"  # Trigger only when this file changes
+    branches:
+      - main  # Adjust if you use a different main branch
+
+jobs:
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensures we can read previous commits
+
+      - name: Extract new version from .bumpversion.cfg
+        id: version
+        run: echo "VERSION=$(grep 'current_version' .bumpversion.cfg | head -n 1 | cut -d ' ' -f3)" >> $GITHUB_ENV
+
+      - name: Zip the plugin folder
+        run: |
+          zip -r thinkpixel-search-rag-${{ env.VERSION }}.zip thinkpixel-search-rag
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: "${{ env.VERSION }}"
+          name: "Release ${{ env.VERSION }}"
+          body: "Automated release for version ${{ env.VERSION }}"
+          draft: false
+          prerelease: false
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Upload ZIP to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: thinkpixel-search-rag-${{ env.VERSION }}.zip
+          token: ${{ secrets.RELEASE_TOKEN }}
+          tag_name: ${{ env.VERSION }}

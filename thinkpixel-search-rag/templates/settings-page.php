@@ -14,6 +14,6 @@ namespace ThinkPixel\Core;
     <!-- SECTION 3: PAGE INDEXING STATS + BULK INDEXING -->
     <?php $this->render_page_indexing_section(); ?>
 
-    <!-- SECTION 4: SKIP PAGES -->
-    <?php $this->render_skip_pages_section(); ?>
+    <!-- SECTION 4: SKIP ITEMS -->
+    <?php $this->render_skip_items_section(); ?>
 </div>

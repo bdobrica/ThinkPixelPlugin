@@ -1,0 +1,134 @@
+#
+msgid ""
+msgstr ""
+"Language: es\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "ThinkPixel Search RAG Settings"
+msgstr "Configuraciones de Búsqueda RAG de ThinkPixel"
+
+msgid "ThinkPixel Search RAG"
+msgstr "Búsqueda RAG de ThinkPixel"
+
+msgid "Now"
+msgstr "Ahora"
+
+msgid "minutes ago"
+msgstr "hace minutos"
+
+msgid "1 hour ago"
+msgstr "Hace 1 hora"
+
+msgid "Today"
+msgstr "Hoy"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Error"
+msgstr "Error"
+
+msgid "Please enter at least 2 characters."
+msgstr "Por favor, ingresa al menos 2 caracteres."
+
+msgid "Bulk processing completed successfully."
+msgstr "El procesamiento por lotes se completó con éxito."
+
+msgid "An error occurred during bulk indexing:"
+msgstr "Ocurrió un error durante la indexación masiva:"
+
+msgid "Error calling bulk processing API."
+msgstr "Error al llamar a la API de procesamiento masivo."
+
+msgid "Bulk processing API returned an error."
+msgstr "La API de procesamiento masivo devolvió un error."
+
+msgid "Settings"
+msgstr "Configuración"
+
+msgid "Error generating API key."
+msgstr "Error al generar la clave de API."
+
+msgid "Error regenerating API key."
+msgstr "Error al regenerar la clave API."
+
+msgid "Error skipping pages."
+msgstr "Error al omitir páginas."
+
+msgid "No pages selected."
+msgstr "No se seleccionaron páginas."
+
+msgid "API Health Status"
+msgstr "Estado de Salud de la API"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "Checking ThinkPixel API availability..."
+msgstr "Comprobando la disponibilidad de la API de ThinkPixel..."
+
+msgid "Version"
+msgstr "Versión"
+
+msgid "Unknown"
+msgstr "Desconocido"
+
+msgid "API Key"
+msgstr "Clave API"
+
+msgid "Manage your ThinkPixel API Key."
+msgstr "Administra tu clave API de ThinkPixel."
+
+msgid "Current API Key"
+msgstr "Clave API Actual"
+
+msgid "Save API Key"
+msgstr "Guardar clave API"
+
+msgid "Actions"
+msgstr "Acciones"
+
+msgid "Regenerate API Key"
+msgstr "Regenerar clave de API"
+
+msgid "Generate API Key"
+msgstr "Generar clave API"
+
+msgid "Page Indexing Status"
+msgstr "Estado de Indexación de Páginas"
+
+msgid "Indexed Pages"
+msgstr "Páginas Indexadas"
+
+msgid "Remaining Pages"
+msgstr "Páginas Restantes"
+
+msgid "Run Bulk Indexing"
+msgstr "Ejecutar Indexación Masiva"
+
+msgid "Skip Pages and Posts"
+msgstr "Saltar páginas y publicaciones"
+
+msgid "Search for pages and posts to skip from indexing."
+msgstr "Buscar páginas y publicaciones para omitir de la indexación."
+
+msgid "Enter page/post title..."
+msgstr "Ingrese el título de la página/publicación..."
+
+msgid "Search"
+msgstr "Buscar"
+
+msgid "Reset"
+msgstr "Restablecer"
+
+msgid "Title"
+msgstr "Título"
+
+msgid "Indexed"
+msgstr "Indexado"
+
+msgid "Updated At"
+msgstr "Actualizado el"
+
+msgid "Skip Selected Pages"
+msgstr "Saltar páginas seleccionadas"

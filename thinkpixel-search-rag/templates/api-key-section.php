@@ -10,7 +10,7 @@ namespace ThinkPixel\Core;
     // This is a simple example of a POST form. 
     // You could also do this with AJAX if you prefer.
     // WP security (nonce field)
-    wp_nonce_field('thinkpixel_api_key_action', 'thinkpixel_api_key_nonce');
+    wp_nonce_field(Strings::ApiKeyAction, Strings::ApiKeyNonce);
     ?>
 
     <table class="form-table">

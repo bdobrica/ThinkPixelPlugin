@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 0.1.1
+ * @version 1.0.0
  */
 class Plugin
 {
@@ -40,7 +40,7 @@ class Plugin
         $this->api = new Api([$this->settings, 'get_api_key']);
         $this->cron = new Cron([$this, 'scheduled_post_processing']);
         $this->rest = new Rest($this->db, $this->settings, $this->api);
-        $this->ui = new UI($plugin_file_path, $this->db, $this->settings);
+        $this->ui = new UI($plugin_file_path, $this->db, $this->settings, $this->api);
 
         $this->register_activation_hook();
         $this->register_deactivation_hook();

@@ -2,7 +2,7 @@
 
 namespace ThinkPixel\Core;
 ?>
-<h2><?php esc_html_e('Skip Pages', Strings::Domain); ?></h2>
+<h2><?php esc_html_e('Skip Pages and Posts', Strings::Domain); ?></h2>
 <p><?php esc_html_e('Search for pages and posts to skip from indexing.', Strings::Domain); ?></p>
 
 <div>
@@ -12,7 +12,7 @@ namespace ThinkPixel\Core;
 </div>
 
 <form id="thinkpixel-skip-form" method="post">
-    <?php wp_nonce_field('thinkpixel_skip_pages_action', 'thinkpixel_skip_pages_nonce'); ?>
+    <?php wp_nonce_field(Strings::SkipItemsAction, Strings::SkipItemsNonce); ?>
     <input type="hidden" name="skip_ids" id="thinkpixel-skip-ids-field" value="" />
     <table class="widefat" id="thinkpixel-skip-results" style="margin-top: 1em;">
         <thead>
@@ -28,7 +28,7 @@ namespace ThinkPixel\Core;
         </tbody>
     </table>
     <div id="thinkpixel-skip-pagination" class="tablenav"></div>
-    <button type="submit" id="thinkpixel-skip-submit" class="button button-primary" style="margin-top: 1em;">
-        <?php esc_html_e('Skip/Unskip Selected Pages', Strings::Domain); ?>
+    <button type="submit" name="thinkpixel_skip_selected_items" id="thinkpixel-skip-submit" class="button button-primary" style="margin-top: 1em;">
+        <?php esc_html_e('Skip Selected Pages', Strings::Domain); ?>
     </button>
 </form>

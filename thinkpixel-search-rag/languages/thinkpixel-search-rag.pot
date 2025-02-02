@@ -1,0 +1,184 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0.0\n"
+"Report-Msgid-Bugs-To: Bogdan Dobrica <bdobrica@gmail.com>\n"
+"POT-Creation-Date: 2025-02-08 16:06:02\n"
+"Last-Translator: Bogdan Dobrica <bdobrica@gmail.com>\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. class/core/ui.php
+msgid "ThinkPixel Search RAG Settings"
+msgstr ""
+
+#. class/core/ui.php
+msgid "ThinkPixel Search RAG"
+msgstr ""
+
+#. class/core/ui.php
+msgid "Now"
+msgstr ""
+
+#. class/core/ui.php
+msgid "minutes ago"
+msgstr ""
+
+#. class/core/ui.php
+msgid "1 hour ago"
+msgstr ""
+
+#. class/core/ui.php
+msgid "Today"
+msgstr ""
+
+#. class/core/ui.php
+msgid "OK"
+msgstr ""
+
+#. class/core/ui.php
+msgid "Error"
+msgstr ""
+
+#. class/core/ui.php
+msgid "Please enter at least 2 characters."
+msgstr ""
+
+#. class/core/ui.php
+msgid "Bulk processing completed successfully."
+msgstr ""
+
+#. class/core/ui.php
+msgid "An error occurred during bulk indexing:"
+msgstr ""
+
+#. class/core/ui.php
+msgid "Error calling bulk processing API."
+msgstr ""
+
+#. class/core/ui.php
+msgid "Bulk processing API returned an error."
+msgstr ""
+
+#. class/core/ui.php
+msgid "Settings"
+msgstr ""
+
+#. class/core/ui.php
+msgid "Error generating API key."
+msgstr ""
+
+#. class/core/ui.php
+msgid "Error regenerating API key."
+msgstr ""
+
+#. class/core/ui.php
+msgid "Error skipping pages."
+msgstr ""
+
+#. class/core/ui.php
+msgid "No pages selected."
+msgstr ""
+
+#. templates/api-health-section.php
+msgid "API Health Status"
+msgstr ""
+
+#. templates/api-health-section.php
+msgid "Status"
+msgstr ""
+
+#. templates/api-health-section.php
+msgid "Checking ThinkPixel API availability..."
+msgstr ""
+
+#. templates/api-health-section.php
+msgid "Version"
+msgstr ""
+
+#. templates/api-health-section.php
+msgid "Unknown"
+msgstr ""
+
+#. templates/api-key-section.php
+msgid "API Key"
+msgstr ""
+
+#. templates/api-key-section.php
+msgid "Manage your ThinkPixel API Key."
+msgstr ""
+
+#. templates/api-key-section.php
+msgid "Current API Key"
+msgstr ""
+
+#. templates/api-key-section.php
+msgid "Save API Key"
+msgstr ""
+
+#. templates/api-key-section.php
+msgid "Actions"
+msgstr ""
+
+#. templates/api-key-section.php
+msgid "Regenerate API Key"
+msgstr ""
+
+#. templates/api-key-section.php
+msgid "Generate API Key"
+msgstr ""
+
+#. templates/page-indexing-section.php
+msgid "Page Indexing Status"
+msgstr ""
+
+#. templates/page-indexing-section.php
+msgid "Indexed Pages"
+msgstr ""
+
+#. templates/page-indexing-section.php
+msgid "Remaining Pages"
+msgstr ""
+
+#. templates/page-indexing-section.php
+msgid "Run Bulk Indexing"
+msgstr ""
+
+#. templates/skip-items-section.php
+msgid "Skip Pages and Posts"
+msgstr ""
+
+#. templates/skip-items-section.php
+msgid "Search for pages and posts to skip from indexing."
+msgstr ""
+
+#. templates/skip-items-section.php
+msgid "Enter page/post title..."
+msgstr ""
+
+#. templates/skip-items-section.php
+msgid "Search"
+msgstr ""
+
+#. templates/skip-items-section.php
+msgid "Reset"
+msgstr ""
+
+#. templates/skip-items-section.php
+msgid "Title"
+msgstr ""
+
+#. templates/skip-items-section.php
+msgid "Indexed"
+msgstr ""
+
+#. templates/skip-items-section.php
+msgid "Updated At"
+msgstr ""
+
+#. templates/skip-items-section.php
+msgid "Skip Selected Pages"
+msgstr ""

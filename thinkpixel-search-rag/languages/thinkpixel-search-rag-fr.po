@@ -1,0 +1,134 @@
+#
+msgid ""
+msgstr ""
+"Language: fr\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "ThinkPixel Search RAG Settings"
+msgstr "Paramètres RAG de ThinkPixel Search"
+
+msgid "ThinkPixel Search RAG"
+msgstr "ThinkPixel Search RAG"
+
+msgid "Now"
+msgstr "Maintenant"
+
+msgid "minutes ago"
+msgstr "il y a quelques minutes"
+
+msgid "1 hour ago"
+msgstr "Il y a 1 heure"
+
+msgid "Today"
+msgstr "Aujourd'hui"
+
+msgid "OK"
+msgstr "D'accord"
+
+msgid "Error"
+msgstr "Erreur"
+
+msgid "Please enter at least 2 characters."
+msgstr "Veuillez entrer au moins 2 caractères."
+
+msgid "Bulk processing completed successfully."
+msgstr "Traitement par lots terminé avec succès."
+
+msgid "An error occurred during bulk indexing:"
+msgstr "Une erreur s'est produite lors de l'indexation en masse :"
+
+msgid "Error calling bulk processing API."
+msgstr "Erreur lors de l'appel de l'API de traitement en masse."
+
+msgid "Bulk processing API returned an error."
+msgstr "L'API de traitement en masse a renvoyé une erreur."
+
+msgid "Settings"
+msgstr "Paramètres"
+
+msgid "Error generating API key."
+msgstr "Erreur lors de la génération de la clé API."
+
+msgid "Error regenerating API key."
+msgstr "Erreur lors de la régénération de la clé API."
+
+msgid "Error skipping pages."
+msgstr "Erreur lors du saut de pages."
+
+msgid "No pages selected."
+msgstr "Aucune page sélectionnée."
+
+msgid "API Health Status"
+msgstr "Statut de Santé de l'API"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "Checking ThinkPixel API availability..."
+msgstr "Vérification de la disponibilité de l'API ThinkPixel..."
+
+msgid "Version"
+msgstr "Version"
+
+msgid "Unknown"
+msgstr "Inconnu"
+
+msgid "API Key"
+msgstr "Clé API"
+
+msgid "Manage your ThinkPixel API Key."
+msgstr "Gérez votre clé API ThinkPixel."
+
+msgid "Current API Key"
+msgstr "Clé API actuelle"
+
+msgid "Save API Key"
+msgstr "Enregistrer la clé API"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Regenerate API Key"
+msgstr "Régénérer la clé API"
+
+msgid "Generate API Key"
+msgstr "Générer une clé API"
+
+msgid "Page Indexing Status"
+msgstr "Statut d'Indexation de la Page"
+
+msgid "Indexed Pages"
+msgstr "Pages indexées"
+
+msgid "Remaining Pages"
+msgstr "Pages restantes"
+
+msgid "Run Bulk Indexing"
+msgstr "Exécuter l'indexation en masse"
+
+msgid "Skip Pages and Posts"
+msgstr "Sauter des pages et des articles"
+
+msgid "Search for pages and posts to skip from indexing."
+msgstr "Recherchez des pages et des articles à exclure de l'indexation."
+
+msgid "Enter page/post title..."
+msgstr "Entrez le titre de la page/publication..."
+
+msgid "Search"
+msgstr "Recherche"
+
+msgid "Reset"
+msgstr "Réinitialiser"
+
+msgid "Title"
+msgstr "Titre"
+
+msgid "Indexed"
+msgstr "Indexé"
+
+msgid "Updated At"
+msgstr "Mis à jour le"
+
+msgid "Skip Selected Pages"
+msgstr "Sauter les pages sélectionnées"

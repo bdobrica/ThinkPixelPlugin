@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 0.1.1
+ * @version 1.0.0
  */
 class Db
 {
@@ -196,7 +196,7 @@ class Db
     }
 
     /**
-     * Update the skip status for a post.
+     * Update the skip status for a post. If the skip flag is true, the processed flag is also set to false.
      *
      * @param int $post_id
      * @param bool $skip_flag
@@ -204,6 +204,16 @@ class Db
      */
     public function update_skip_status_for_post(int $post_id, bool $skip_flag = true): void
     {
+        if ((int) $skip_flag === 1) {
+            $this->wpdb->update(
+                $this->get_post_logs_table_name(),
+                ['skip_flag' => $skip_flag, 'processed_flag' => 0],
+                ['post_id' => $post_id],
+                ['%d', '%d'],
+                ['%d']
+            );
+            return;
+        }
         $this->wpdb->update(
             $this->get_post_logs_table_name(),
             ['skip_flag' => $skip_flag],
@@ -214,7 +224,7 @@ class Db
     }
 
     /**
-     * Update the skip status for multiple posts.
+     * Update the skip status for multiple posts. If the skip flag is true, the processed flag is also set to false.
      *
      * @param array $post_ids
      * @param bool $skip_flag
@@ -223,8 +233,24 @@ class Db
     public function update_skip_status_for_posts(array $post_ids, $skip_flag): void
     {
         $ids_placeholder = implode(',', array_fill(0, count($post_ids), '%d'));
+
+        if ((int) $skip_flag === 1) {
+            $sql = $this->wpdb->prepare(
+                'UPDATE `' .
+                    $this->get_post_logs_table_name() .
+                    '` SET skip_flag = %d, processed_flag = 0' .
+                    ' WHERE post_id IN (' . $ids_placeholder . ')',
+                array_merge([$skip_flag], $post_ids)
+            );
+            $this->wpdb->query($sql);
+            return;
+        }
+
         $sql = $this->wpdb->prepare(
-            "UPDATE `" . $this->get_post_logs_table_name() . "` SET skip_flag = %d WHERE post_id IN ($ids_placeholder)",
+            'UPDATE `' .
+                $this->get_post_logs_table_name() .
+                '` SET skip_flag = %d' .
+                ' WHERE post_id IN (' . $ids_placeholder . ')',
             array_merge([$skip_flag], $post_ids)
         );
         $this->wpdb->query($sql);
@@ -258,10 +284,6 @@ class Db
         if ($limit > 0)
             $sql .= $this->wpdb->prepare(" LIMIT %d OFFSET %d", $limit, $offset);
         $results = $this->wpdb->get_results($sql, ARRAY_A);
-
-
-        $count = 400;
-        $limit = 10;
 
         return [
             'offset' => $offset,
@@ -337,12 +359,15 @@ class Db
         // Hash the search term.
         $search_hash = hash('sha256', $search_term);
 
+        // Calculate the expiration time.
+        $expires_at = date('Y-m-d H:i:s', time() + $this->cache_expiry_time);
+
         // Prepare the data for insertion.
         $data = [
             'search_hash' => $search_hash,
             'search_query' => $search_term,
             'results' => json_encode($search_results),
-            'expires_at' => current_time('mysql', 1) + $this->cache_expiry_time,
+            'expires_at' => $expires_at,
         ];
 
         // Insert the data into the search cache table.

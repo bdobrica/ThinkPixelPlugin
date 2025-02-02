@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 0.1.1
+ * @version 1.0.0
  */
 class Rest
 {
@@ -122,7 +122,7 @@ class Rest
         add_action('rest_api_init', function () {
             if ($this->get_api_key()) return;
             // Register the validation endpoint: ?rest_route=/thinkpixel/v1/validate/
-            register_rest_route('thinkpixel/v1', 'validate', [
+            register_rest_route(Strings::RestNamespace, Strings::ValidateRoute, [
                 'methods' => 'GET',
                 'callback' => [$this, 'handle_validation_request'],
             ]);
@@ -158,7 +158,7 @@ class Rest
     private function register_key_exchange_request(): void
     {
         add_action('rest_api_init', function () {
-            register_rest_route('thinkpixel/v1', 'exchange', [
+            register_rest_route(Strings::RestNamespace, Strings::ExchangeRoute, [
                 'methods' => 'POST',
                 'callback' => [$this, 'handle_key_exchange_request'],
             ]);
@@ -199,7 +199,7 @@ class Rest
     private function register_ping_endpoint(): void
     {
         add_action('rest_api_init', function () {
-            register_rest_route('thinkpixel/v1', 'ping', [
+            register_rest_route(Strings::RestNamespace, Strings::PingRoute, [
                 'methods' => 'POST',
                 'callback' => [$this, 'handle_ping_request'],
                 'permission_callback' => '__return_true',
@@ -226,7 +226,7 @@ class Rest
     private function register_bulk_post_processing(): void
     {
         add_action('rest_api_init', function () {
-            register_rest_route('thinkpixel/v1', 'bulk-process', [
+            register_rest_route(Strings::RestNamespace, Strings::BulkProcessRoute, [
                 'methods' => 'POST',
                 'callback' => [$this, 'handle_bulk_post_processing'],
             ]);
@@ -259,7 +259,7 @@ class Rest
     private function register_skip_search(): void
     {
         add_action('rest_api_init', function () {
-            register_rest_route('thinkpixel/v1', 'skip-search', [
+            register_rest_route(Strings::RestNamespace, Strings::SkipSearchRoute, [
                 'methods' => 'POST',
                 'callback' => [$this, 'handle_skip_search'],
             ]);
@@ -293,7 +293,7 @@ class Rest
     private function register_debug(): void
     {
         add_action('rest_api_init', function () {
-            register_rest_route('thinkpixel/v1', 'debug', [
+            register_rest_route(Strings::RestNamespace, Strings::DebugRoute, [
                 'methods' => 'GET',
                 'callback' => [$this, 'handle_debug'],
             ]);

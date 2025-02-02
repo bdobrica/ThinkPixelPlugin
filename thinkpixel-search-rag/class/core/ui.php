@@ -14,12 +14,13 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 0.1.1
+ * @version 1.0.0
  */
 class UI
 {
     private $db;
     private $settings;
+    private $api;
 
     private $plugin_basename;
     private $plugin_dir_path;
@@ -33,10 +34,11 @@ class UI
      * @param Db $db Database object.
      * @param Settings $settings Settings object.
      */
-    public function __construct(string $plugin_file_path, Db $db, Settings $settings)
+    public function __construct(string $plugin_file_path, Db $db, Settings $settings, Api $api)
     {
         $this->db = $db;
         $this->settings = $settings;
+        $this->api = $api;
 
         $this->plugin_dir_path = plugin_dir_path($plugin_file_path);
         $this->plugin_dir_url = plugin_dir_url($plugin_file_path);
@@ -47,6 +49,8 @@ class UI
         add_action('admin_notices', [$this, 'admin_notices']);
         add_action('admin_menu', [$this, 'add_settings_page']);
         add_filter('plugin_action_links_' . $this->plugin_basename, [$this, 'add_settings_link']);
+        add_action('admin_init', [$this, 'api_key_actions_handler']);
+        add_action('admin_init', [$this, 'skip_items_actions_handler']);
     }
 
     /**
@@ -93,7 +97,7 @@ class UI
             // Display the error message.
             echo '<div class="notice notice-error is-dismissible">';
             echo '<p>';
-            echo '<strong>' . Strings::PluginName . ' Sync Error:</strong>';
+            echo '<strong>' . Strings::PluginName . ' Error: </strong>';
             echo esc_html($error_message);
             echo '</p>';
             echo '</div>';
@@ -136,34 +140,46 @@ class UI
         wp_enqueue_script(
             Strings::SettingsJS,
             $this->plugin_dir_url . 'assets/js/admin.js',
-            array('jquery'),
+            ['jquery'],
             Strings::PluginVersion,
             true
         );
 
         // Enqueue styles for the settings page.
         wp_enqueue_style(
-            Strings::SettingsJS,
+            Strings::SettingsCSS,
             $this->plugin_dir_url . 'assets/css/admin.css',
-            array(),
+            [],
             Strings::PluginVersion
         );
 
         // Localize script to pass any necessary data or nonce
         wp_localize_script(
             Strings::SettingsJS,
-            'thinkpixelSettings',
-            array(
+            Strings::SettingsJSObject,
+            [
                 'wp_rest_nonce' => wp_create_nonce('wp_rest'),
-                'ping_url' => rest_url('thinkpixel/v1/ping'),
-                'skip_search_url' => rest_url('thinkpixel/v1/skip-search'),
-                'skip_pages_url' => rest_url('thinkpixel/v1/skip-pages'),
-                'bulk_post_processing_url' => rest_url('thinkpixel/v1/bulk-process'),
-            )
+                'ping_url' => rest_url(Strings::RestNamespace . '/' . Strings::PingRoute),
+                'skip_search_url' => rest_url(Strings::RestNamespace . '/' . Strings::SkipSearchRoute),
+                'bulk_post_processing_url' => rest_url(Strings::RestNamespace . '/' . Strings::BulkProcessRoute),
+                'text' => [
+                    'now' => __('Now', Strings::Domain),
+                    'minutesAgo' => __('minutes ago', Strings::Domain),
+                    'hourAgo' => __('1 hour ago', Strings::Domain),
+                    'today' => __('Today', Strings::Domain),
+                    'ok' => __('OK', Strings::Domain),
+                    'error' => __('Error', Strings::Domain),
+                    'minChars' => __('Please enter at least 2 characters.', Strings::Domain),
+                    'bulkSuccess' => __('Bulk processing completed successfully.', Strings::Domain),
+                    'bulkError' => __('An error occurred during bulk indexing: ', Strings::Domain),
+                    'bulkRequestError' => __('Error calling bulk processing API.', Strings::Domain),
+                    'bulkResposeError' => __('Bulk processing API returned an error.', Strings::Domain),
+                ]
+            ]
         );
 
         // Include the settings page template.
-        include($this->templates_path . "settings-page.php");
+        include($this->templates_path . 'settings-page.php');
     }
 
     /**
@@ -191,7 +207,7 @@ class UI
         $api_key = $this->get_api_key();
 
         // Include the API key section template.
-        include($this->templates_path . "api-key-section.php");
+        include($this->templates_path . 'api-key-section.php');
     }
 
     /**
@@ -202,7 +218,7 @@ class UI
     function render_api_health_section()
     {
         // Include the API health section template.
-        include($this->templates_path . "api-health-section.php");
+        include($this->templates_path . 'api-health-section.php');
     }
 
     /**
@@ -217,18 +233,18 @@ class UI
         $remaining_count = $total_count - $processed_count;
 
         // Include the page indexing section template.
-        include($this->templates_path . "page-indexing-section.php");
+        include($this->templates_path . 'page-indexing-section.php');
     }
 
     /**
-     * Renders the skip pages section of the settings page.
+     * Renders the skip items section of the settings page.
      *
      * @return void
      */
-    function render_skip_pages_section()
+    function render_skip_items_section()
     {
         // Include the skip pages section template.
-        include($this->templates_path . "skip-pages-section.php");
+        include($this->templates_path . 'skip-items-section.php');
     }
 
     /**
@@ -236,24 +252,51 @@ class UI
      *
      * @return void
      */
-    function api_key_actions_handler()
+    public function api_key_actions_handler()
     {
         if (
             isset($_POST[Strings::ApiKeyNonce])
-            && wp_verify_nonce($_POST[Strings::ApiKeyNonce], 'thinkpixel_api_key_action')
+            && wp_verify_nonce($_POST[Strings::ApiKeyNonce], Strings::ApiKeyAction)
             && current_user_can('manage_options')
         ) {
             if (isset($_POST['thinkpixel_generate_api_key'])) {
                 // Call your remote API to register plugin and get new API key
                 $new_key = $this->get_api_key_from_remote();
-                if (! is_wp_error($new_key) && ! empty($new_key)) {
+                if (is_wp_error($new_key) || empty($new_key)) {
+                    set_transient(Strings::ApiErrorTransient, __('Error generating API key.', Strings::Domain), 30);
+                } else {
                     update_option(Strings::ApiKeyOption, sanitize_text_field($new_key));
                 }
             } elseif (isset($_POST['thinkpixel_regenerate_api_key'])) {
                 // Call your remote API to regenerate key
-                $regen_key = $this->regenerate_api_key_remote();
-                if (! is_wp_error($regen_key) && ! empty($regen_key)) {
-                    update_option(Strings::ApiKeyOption, sanitize_text_field($regen_key));
+                $refreshed_key = $this->refresh_api_key_remote();
+                if (is_wp_error($refreshed_key) || empty($refreshed_key)) {
+                    set_transient(Strings::ApiErrorTransient, __('Error regenerating API key.', Strings::Domain), 30);
+                } else {
+                    $this->settings->store_api_key($refreshed_key);
+                }
+            }
+        }
+    }
+
+    public function skip_items_actions_handler()
+    {
+        if (
+            isset($_POST[Strings::SkipItemsNonce])
+            && wp_verify_nonce($_POST[Strings::SkipItemsNonce], Strings::SkipItemsAction)
+            && current_user_can('manage_options')
+        ) {
+            if (isset($_POST['thinkpixel_skip_selected_items'])) {
+                // Handle skip/unskip selected pages
+                $skip_ids = isset($_POST['skip_ids']) ? json_decode(stripslashes(($_POST['skip_ids']))) : [];
+                if (is_array($skip_ids) && ! empty($skip_ids)) {
+                    $skip_ids = $this->api->remove_posts_from_index($skip_ids);
+                    if (empty($skip_ids)) {
+                        set_transient(Strings::ApiErrorTransient, __('Error skipping pages.', Strings::Domain), 30);
+                    }
+                    $this->db->update_skip_status_for_posts($skip_ids, 1);
+                } else {
+                    set_transient(Strings::ApiErrorTransient, __('No pages selected.', Strings::Domain), 30);
                 }
             }
         }
@@ -264,9 +307,9 @@ class UI
      *
      * @return string The new API key.
      */
-    function get_api_key_from_remote()
+    function get_api_key_from_remote(): string
     {
-        return "";
+        return '';
     }
 
     /**
@@ -274,8 +317,8 @@ class UI
      *
      * @return string The regenerated API key.
      */
-    function regenerate_api_key_remote()
+    function refresh_api_key_remote(): ?string
     {
-        return "";
+        return $this->api->refresh_api_key();
     }
 }

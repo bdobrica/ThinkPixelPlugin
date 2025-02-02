@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 0.1.1
+ * @version 1.0.0
  */
 class Strings
 {
@@ -26,7 +26,7 @@ class Strings
     /**
      * The version of the plugin.
      */
-    const PluginVersion = '0.1.1';
+    const PluginVersion = '1.0.0';
 
     /**
      * The plugin identifier.
@@ -39,14 +39,19 @@ class Strings
     const PluginSlug = 'thinkpixel-search-rag';
 
     /**
+     * The short plugin identifier slug.
+     */
+    const PluginShortSlug = 'thinkpixel';
+
+    /**
      * The name of the database table used by the plugin.
      */
-    const PageLogTable = "thinkpixel_page_log";
+    const PageLogTable = self::PluginShortSlug . '_page_log';
 
     /**
      * The name of the database table used for caching search results.
      */
-    const SearchCacheTable = "thinkpixel_search_cache";
+    const SearchCacheTable = self::PluginShortSlug . '_search_cache';
 
     /**
      * The base URL for the ThinkPixel API.
@@ -84,9 +89,54 @@ class Strings
     const StoreEndpoint = self::ApiUrl . '/store';
 
     /**
+     * The endpoint for removing item embeddings.
+     */
+    const RemoveItemsFromIndexEndpoint = self::ApiUrl . '/remove/embeddings';
+
+    /**
+     * The endpoint for regenerating the API key.
+     */
+    const RefreshApiKeyEndpoint = self::ApiUrl . '/refresh/apikey';
+
+    /**
      * The transient key for storing the JWT token.
      */
     const JWTTransient = self::Plugin . '_jwt';
+
+    /**
+     * The plugin rest namespace.
+     */
+    const RestNamespace = self::PluginShortSlug . '/v1';
+
+    /**
+     * The rest route for validating the current website.
+     */
+    const ValidateRoute = 'validate';
+
+    /**
+     * The rest route for exchanging the validation token for an API key.
+     */
+    const ExchangeRoute = 'exchange';
+
+    /**
+     * The rest route for pinging the API.
+     */
+    const PingRoute = 'ping';
+
+    /**
+     * The rest route for bulk processing.
+     */
+    const BulkProcessRoute = 'bulk-process';
+
+    /**
+     * The rest route for skipping search.
+     */
+    const SkipSearchRoute = 'skip-search';
+
+    /**
+     * The rest route for debugging report.
+     */
+    const DebugRoute = 'debug';
 
     /**
      * Nonce for API key actions.
@@ -94,24 +144,19 @@ class Strings
     const ApiKeyNonce = self::Plugin . '_api_key_nonce';
 
     /**
-     * Nonce for bulk indexing actions.
-     */
-    const BulkIndexNonce = self::Plugin . '_bulk_index_nonce';
-
-    /**
-     * Nonce for ping actions.
-     */
-    const PingNonce = self::Plugin . '_ping_nonce';
-
-    /**
      * Nonce for skipping pages actions.
      */
-    const SkipPagesNonce = self::Plugin . '_skip_pages_nonce';
+    const SkipItemsNonce = self::Plugin . '_skip_items_nonce';
 
     /**
-     * Nonce for skipping search actions.
+     * Action for managing the API key.
      */
-    const SkipSearchNonce = self::Plugin . '_skip_search_nonce';
+    const ApiKeyAction = self::Plugin . '_api_key_action';
+
+    /**
+     * Action for managing the skipped pages.
+     */
+    const SkipItemsAction = self::Plugin . '_skip_items_action';
 
     /**
      * Nonce for key exchange actions.
@@ -132,6 +177,16 @@ class Strings
      * Handle for the settings JavaScript file.
      */
     const SettingsJS = self::PluginSlug . '-settings-js';
+
+    /**
+     * JavaScript object for the settings page.
+     */
+    const SettingsJSObject = self::PluginShortSlug . 'Settings';
+
+    /**
+     * Handle for the settings CSS file.
+     */
+    const SettingsCSS = self::PluginSlug . '-settings-css';
 
     /**
      * Slug for the settings page.

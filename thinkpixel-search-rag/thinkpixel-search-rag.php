@@ -1,11 +1,14 @@
 <?php
 /*
-Plugin Name: ThinkPixel Search and RAG Plugin
+Plugin Name: ThinkPixel Search and RAG
 Plugin URI: https://thinkpixel.io/
-Description: ThinkPixel Search and RAG Plugin
+Description: ThinkPixel Search and RAG enhances WordPress search by using machine learning generated text embeddings from the your website posts and pages to help provide meaningful results to your users' queries. As the vast majority of wordpress hosting services do not provide the necessary resources to run machine learning models, ThinkPixel Search and RAG uses the ThinkPixel API to generate the embeddings and provide the search results. The plugin connects to the ThinkPixel API using a secure connection and does not store any user data on the ThinkPixel servers, with the exception of the text embeddings.
 Author: Bogdan Dobrica
-Version: 0.1.1
+Version: 1.0.0
 Author URI: https://ublo.ro/
+Text Domain: thinkpixel-search-rag
+Domain Path: /languages
+License: Apache-2.0
 */
 
 defined('ABSPATH') or die('No script kiddies please!');

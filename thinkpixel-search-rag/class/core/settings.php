@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.1.0
+ * @version 1.1.1
  */
 class Settings
 {
@@ -52,8 +52,6 @@ class Settings
      */
     function get_api_key(): ?string
     {
-        return 'api-key-5JVg_fxeW0YGda8-IeHugX8-';
-
         $stored_value = get_option(Strings::ApiKeyOption);
         if (!$stored_value) return null;
 

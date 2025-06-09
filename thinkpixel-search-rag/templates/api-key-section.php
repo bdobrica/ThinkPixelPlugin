@@ -34,6 +34,9 @@ namespace ThinkPixel\Core;
                     <button type="submit" name="thinkpixel_regenerate_api_key" class="button button-secondary">
                         <?php esc_html_e('Regenerate API Key', Strings::Domain); ?>
                     </button>
+                    <button type="submit" name="thinkpixel_request_new_api_key" class="button button-secondary">
+                        <?php esc_html_e('Request New API Key', Strings::Domain); ?>
+                    </button>
                 <?php else : ?>
                     <button type="submit" name="thinkpixel_generate_api_key" class="button button-primary">
                         <?php esc_html_e('Generate API Key', Strings::Domain); ?>

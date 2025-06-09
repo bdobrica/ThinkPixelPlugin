@@ -5,10 +5,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "ThinkPixel Search RAG Settings"
-msgstr "Paramètres RAG de ThinkPixel Search"
+msgstr "Paramètres de Recherche RAG ThinkPixel"
 
 msgid "ThinkPixel Search RAG"
-msgstr "ThinkPixel Search RAG"
+msgstr "Recherche ThinkPixel RAG"
 
 msgid "Now"
 msgstr "Maintenant"
@@ -32,7 +32,7 @@ msgid "Please enter at least 2 characters."
 msgstr "Veuillez entrer au moins 2 caractères."
 
 msgid "Bulk processing completed successfully."
-msgstr "Traitement par lots terminé avec succès."
+msgstr "Traitement en masse terminé avec succès."
 
 msgid "An error occurred during bulk indexing:"
 msgstr "Une erreur s'est produite lors de l'indexation en masse :"
@@ -41,7 +41,7 @@ msgid "Error calling bulk processing API."
 msgstr "Erreur lors de l'appel de l'API de traitement en masse."
 
 msgid "Bulk processing API returned an error."
-msgstr "L'API de traitement en masse a renvoyé une erreur."
+msgstr "L'API de traitement en masse a retourné une erreur."
 
 msgid "Settings"
 msgstr "Paramètres"
@@ -59,7 +59,7 @@ msgid "No pages selected."
 msgstr "Aucune page sélectionnée."
 
 msgid "API Health Status"
-msgstr "Statut de Santé de l'API"
+msgstr "État de Santé de l'API"
 
 msgid "Status"
 msgstr "Statut"
@@ -91,11 +91,14 @@ msgstr "Actions"
 msgid "Regenerate API Key"
 msgstr "Régénérer la clé API"
 
+msgid "Request New API Key"
+msgstr "Demander une nouvelle clé API"
+
 msgid "Generate API Key"
 msgstr "Générer une clé API"
 
 msgid "Page Indexing Status"
-msgstr "Statut d'Indexation de la Page"
+msgstr "Statut de l'indexation de la page"
 
 msgid "Indexed Pages"
 msgstr "Pages indexées"
@@ -107,16 +110,16 @@ msgid "Run Bulk Indexing"
 msgstr "Exécuter l'indexation en masse"
 
 msgid "Skip Pages and Posts"
-msgstr "Sauter des pages et des articles"
+msgstr "Ignorer les pages et les articles"
 
 msgid "Search for pages and posts to skip from indexing."
-msgstr "Recherchez des pages et des articles à exclure de l'indexation."
+msgstr "Rechercher des pages et des articles à exclure de l'indexation."
 
 msgid "Enter page/post title..."
 msgstr "Entrez le titre de la page/publication..."
 
 msgid "Search"
-msgstr "Recherche"
+msgstr "Rechercher"
 
 msgid "Reset"
 msgstr "Réinitialiser"
@@ -131,4 +134,4 @@ msgid "Updated At"
 msgstr "Mis à jour le"
 
 msgid "Skip Selected Pages"
-msgstr "Sauter les pages sélectionnées"
+msgstr "Passer les pages sélectionnées"

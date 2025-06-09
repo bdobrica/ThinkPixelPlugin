@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.0.0
+ * @version 1.1.0
  */
 class Strings
 {
@@ -26,7 +26,7 @@ class Strings
     /**
      * The version of the plugin.
      */
-    const PluginVersion = '1.0.0';
+    const PluginVersion = '1.1.0';
 
     /**
      * The plugin identifier.
@@ -61,7 +61,7 @@ class Strings
     /**
      * The translation domain for the plugin.
      */
-    const Domain = self::PluginSlug;
+    const Domain = 'thinkpixel-search-rag';
 
     /**
      * The endpoint for fetching the authentication token.

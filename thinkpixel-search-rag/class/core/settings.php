@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.0.0
+ * @version 1.1.0
  */
 class Settings
 {
@@ -42,7 +42,7 @@ class Settings
      */
     function has_api_key(): bool
     {
-        return (bool) get_option(Strings::ApiKeyOption) || true;
+        return (bool) get_option(Strings::ApiKeyOption);
     }
 
     /**

@@ -5,7 +5,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "ThinkPixel Search RAG Settings"
-msgstr "ThinkPixel-Suche RAG-Einstellungen"
+msgstr "ThinkPixel Suche RAG-Einstellungen"
 
 msgid "ThinkPixel Search RAG"
 msgstr "ThinkPixel Suche RAG"
@@ -23,7 +23,7 @@ msgid "Today"
 msgstr "Heute"
 
 msgid "OK"
-msgstr "OK"
+msgstr "In Ordnung"
 
 msgid "Error"
 msgstr "Fehler"
@@ -35,10 +35,10 @@ msgid "Bulk processing completed successfully."
 msgstr "Stapelverarbeitung erfolgreich abgeschlossen."
 
 msgid "An error occurred during bulk indexing:"
-msgstr "Ein Fehler ist beim Massenindexieren aufgetreten:"
+msgstr "Ein Fehler ist während der Massenindexierung aufgetreten:"
 
 msgid "Error calling bulk processing API."
-msgstr "Fehler beim Aufruf der Bulk-Verarbeitungs-API."
+msgstr "Fehler beim Aufrufen der Massenverarbeitungs-API."
 
 msgid "Bulk processing API returned an error."
 msgstr "Die Massenverarbeitungs-API hat einen Fehler zurückgegeben."
@@ -47,10 +47,10 @@ msgid "Settings"
 msgstr "Einstellungen"
 
 msgid "Error generating API key."
-msgstr "Fehler bei der Generierung des API-Schlüssels."
+msgstr "Fehler beim Generieren des API-Schlüssels."
 
 msgid "Error regenerating API key."
-msgstr "Fehler bei der Neugenerierung des API-Schlüssels."
+msgstr "Fehler beim Erneuern des API-Schlüssels."
 
 msgid "Error skipping pages."
 msgstr "Fehler beim Überspringen von Seiten."
@@ -89,7 +89,10 @@ msgid "Actions"
 msgstr "Aktionen"
 
 msgid "Regenerate API Key"
-msgstr "API-Schlüssel erneuern"
+msgstr "API-Schlüssel neu generieren"
+
+msgid "Request New API Key"
+msgstr "Neuen API-Schlüssel anfordern"
 
 msgid "Generate API Key"
 msgstr "API-Schlüssel generieren"
@@ -98,24 +101,23 @@ msgid "Page Indexing Status"
 msgstr "Seitenindexierungsstatus"
 
 msgid "Indexed Pages"
-msgstr "Indizierte Seiten"
+msgstr "Indexierte Seiten"
 
 msgid "Remaining Pages"
 msgstr "Verbleibende Seiten"
 
 msgid "Run Bulk Indexing"
-msgstr "Massenindexierung ausführen"
+msgstr "Massenindizierung ausführen"
 
 msgid "Skip Pages and Posts"
 msgstr "Seiten und Beiträge überspringen"
 
 msgid "Search for pages and posts to skip from indexing."
 msgstr ""
-"Suche nach Seiten und Beiträgen, die von der Indexierung ausgeschlossen "
-"werden sollen."
+"Seiten und Beiträge suchen, um sie von der Indizierung auszuschließen."
 
 msgid "Enter page/post title..."
-msgstr "Geben Sie den Titel der Seite/Beitrags ein..."
+msgstr "Seitentitel/Beitragstitel eingeben..."
 
 msgid "Search"
 msgstr "Suche"
@@ -127,10 +129,10 @@ msgid "Title"
 msgstr "Titel"
 
 msgid "Indexed"
-msgstr "Indexiert"
+msgstr "Indiziert"
 
 msgid "Updated At"
 msgstr "Aktualisiert am"
 
 msgid "Skip Selected Pages"
-msgstr "Überspringe Ausgewählte Seiten"
+msgstr "Ausgewählte Seiten überspringen"

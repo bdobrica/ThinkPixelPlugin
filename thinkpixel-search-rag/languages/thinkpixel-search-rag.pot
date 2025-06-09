@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0.0\n"
 "Report-Msgid-Bugs-To: Bogdan Dobrica <bdobrica@gmail.com>\n"
-"POT-Creation-Date: 2025-02-08 16:06:02\n"
+"POT-Creation-Date: 2025-06-09 17:16:48\n"
 "Last-Translator: Bogdan Dobrica <bdobrica@gmail.com>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -125,6 +125,10 @@ msgstr ""
 
 #. templates/api-key-section.php
 msgid "Regenerate API Key"
+msgstr ""
+
+#. templates/api-key-section.php
+msgid "Request New API Key"
 msgstr ""
 
 #. templates/api-key-section.php

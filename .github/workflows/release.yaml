@@ -3,9 +3,9 @@ name: Release WordPress Plugin
 on:
   push:
     paths:
-      - ".bumpversion.cfg"  # Trigger only when this file changes
+      - ".bumpversion.cfg"
     branches:
-      - main  # Adjust if you use a different main branch
+      - main
 
 jobs:
   release:
@@ -16,7 +16,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Ensures we can read previous commits
+          fetch-depth: 0
+
+      - name: Extract text domain from Strings.php
+        id: domain
+        run: |
+          DOMAIN=$(grep -Po "const\s+Domain\s*=\s*'\K[^']+" thinkpixel-search-rag/class/core/strings.php)
+          echo "TEXT_DOMAIN=$DOMAIN" >> $GITHUB_ENV
+
+      - name: Replace Strings::Domain with actual domain
+        run: |
+          find thinkpixel-search-rag -type f -name "*.php" -exec \
+          sed -i "s/Strings::Domain/'${{ env.TEXT_DOMAIN }}'/g" {} +
 
       - name: Extract new version from .bumpversion.cfg
         id: version

@@ -79,6 +79,11 @@ We only store embeddings (numeric representations) of your content; raw content 
 
 == Changelog ==
 
+= 1.1.0 =
+* **Bug**: Fixes the detection of existing API key. Before this update, the API function was always returning true.
+* **Bug**: Replaces the text domain constant with the actual string value to comply with Wordpress Plugins.
+* **Feature**: Adds a Request New API Key button in the interface so if the key is lost or corrupted, it can be recovered.
+
 = 1.0.0 =
 * Initial release with hourly sync for posts/pages.
 * Secure API key encryption using WordPress salts.

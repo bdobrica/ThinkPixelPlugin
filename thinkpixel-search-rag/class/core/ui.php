@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.0.0
+ * @version 1.1.0
  */
 class UI
 {
@@ -259,7 +259,7 @@ class UI
             && wp_verify_nonce($_POST[Strings::ApiKeyNonce], Strings::ApiKeyAction)
             && current_user_can('manage_options')
         ) {
-            if (isset($_POST['thinkpixel_generate_api_key'])) {
+            if (isset($_POST['thinkpixel_generate_api_key']) || isset($_POST['thinkpixel_request_new_api_key'])) {
                 // Call your remote API to register plugin and get new API key
                 $new_key = $this->get_api_key_from_remote();
                 if (is_wp_error($new_key) || empty($new_key)) {

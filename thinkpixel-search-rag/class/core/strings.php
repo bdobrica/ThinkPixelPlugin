@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.1.2
+ * @version 1.2.0
  */
 class Strings
 {
@@ -26,7 +26,7 @@ class Strings
     /**
      * The version of the plugin.
      */
-    const PluginVersion = '1.1.2';
+    const PluginVersion = '1.2.0';
 
     /**
      * The plugin identifier.
@@ -166,7 +166,7 @@ class Strings
     /**
      * Transient key for storing API error messages.
      */
-    const ApiErrorTransient = self::Plugin . '_api_error';
+    const ApiNoticeTransient = self::Plugin . '_api_notice';
 
     /**
      * Option key for storing the API key.

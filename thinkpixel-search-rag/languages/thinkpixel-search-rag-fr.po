@@ -4,11 +4,23 @@ msgstr ""
 "Language: fr\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 
+msgid "%s Information"
+msgstr "%s Informations"
+
+msgid "%s Error"
+msgstr "Erreur %s"
+
+msgid "%s Success"
+msgstr "%s Succès"
+
+msgid "%s Warning"
+msgstr "%s Avertissement"
+
 msgid "ThinkPixel Search RAG Settings"
-msgstr "Paramètres de Recherche RAG ThinkPixel"
+msgstr "Paramètres RAG de ThinkPixel Search"
 
 msgid "ThinkPixel Search RAG"
-msgstr "Recherche ThinkPixel RAG"
+msgstr "ThinkPixel Recherche RAG"
 
 msgid "Now"
 msgstr "Maintenant"
@@ -17,7 +29,7 @@ msgid "minutes ago"
 msgstr "il y a quelques minutes"
 
 msgid "1 hour ago"
-msgstr "Il y a 1 heure"
+msgstr "il y a 1 heure"
 
 msgid "Today"
 msgstr "Aujourd'hui"
@@ -41,7 +53,7 @@ msgid "Error calling bulk processing API."
 msgstr "Erreur lors de l'appel de l'API de traitement en masse."
 
 msgid "Bulk processing API returned an error."
-msgstr "L'API de traitement en masse a retourné une erreur."
+msgstr "L'API de traitement en masse a renvoyé une erreur."
 
 msgid "Settings"
 msgstr "Paramètres"
@@ -49,14 +61,26 @@ msgstr "Paramètres"
 msgid "Error generating API key."
 msgstr "Erreur lors de la génération de la clé API."
 
+msgid "API key generated successfully."
+msgstr "Clé API générée avec succès."
+
 msgid "Error regenerating API key."
 msgstr "Erreur lors de la régénération de la clé API."
+
+msgid "API key regenerated successfully."
+msgstr "Clé API régénérée avec succès."
 
 msgid "Error skipping pages."
 msgstr "Erreur lors du saut de pages."
 
 msgid "No pages selected."
 msgstr "Aucune page sélectionnée."
+
+msgid "Error requesting new API key."
+msgstr "Erreur lors de la demande d'une nouvelle clé API."
+
+msgid "Timeout while waiting for API key."
+msgstr "Délai d'attente dépassé en attendant la clé API."
 
 msgid "API Health Status"
 msgstr "État de Santé de l'API"
@@ -98,10 +122,10 @@ msgid "Generate API Key"
 msgstr "Générer une clé API"
 
 msgid "Page Indexing Status"
-msgstr "Statut de l'indexation de la page"
+msgstr "Statut d'indexation de la page"
 
 msgid "Indexed Pages"
-msgstr "Pages indexées"
+msgstr "Pages Indexées"
 
 msgid "Remaining Pages"
 msgstr "Pages restantes"
@@ -113,13 +137,13 @@ msgid "Skip Pages and Posts"
 msgstr "Ignorer les pages et les articles"
 
 msgid "Search for pages and posts to skip from indexing."
-msgstr "Rechercher des pages et des articles à exclure de l'indexation."
+msgstr "Rechercher des pages et des publications à exclure de l'indexation."
 
 msgid "Enter page/post title..."
 msgstr "Entrez le titre de la page/publication..."
 
 msgid "Search"
-msgstr "Rechercher"
+msgstr "Recherche"
 
 msgid "Reset"
 msgstr "Réinitialiser"
@@ -134,4 +158,4 @@ msgid "Updated At"
 msgstr "Mis à jour le"
 
 msgid "Skip Selected Pages"
-msgstr "Passer les pages sélectionnées"
+msgstr "Ignorer les pages sélectionnées"

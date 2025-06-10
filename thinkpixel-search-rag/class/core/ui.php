@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.1.2
+ * @version 1.2.0
  */
 class UI
 {
@@ -54,23 +54,40 @@ class UI
     }
 
     /**
-     * Retrieves the API key from the settings.
+     * Displays a message in the admin area.
      *
-     * @return string|null The API key or null if not set.
+     * @return void
      */
-    private function get_api_key(): ?string
+    public function show_notice(string $message, string $type = 'info'): void
     {
-        return $this->settings->get_api_key();
+        if (!in_array($type, ['info', 'error', 'success', 'warning'])) {
+            throw new \InvalidArgumentException('Invalid message type: ' . $type);
+        }
+        // Set a transient to show the error message in the admin notice.
+        set_transient(Strings::ApiNoticeTransient, [
+            'message' => $message,
+            'type' => $type
+        ], 30);
     }
 
     /**
-     * Retrieves the count of processed posts from the database.
-     *
-     * @return int The count of processed posts.
+     * Display admin success message.
+     * 
+     * @return void
      */
-    private function get_processed_post_count(): int
+    public function show_success_notice(string $message): void
     {
-        return $this->db->get_processed_post_count();
+        $this->show_notice($message, 'success');
+    }
+
+    /**
+     * Display admin error message.
+     * 
+     * @return void
+     */
+    public function show_error_notice(string $message): void
+    {
+        $this->show_notice($message, 'error');
     }
 
     /**
@@ -91,18 +108,30 @@ class UI
     function admin_notices(): void
     {
         // Check if there's an error message in the transient.
-        $error_message = get_transient(Strings::ApiErrorTransient);
+        $message_data = get_transient(Strings::ApiNoticeTransient);
 
-        if ($error_message) {
+        $message_type = $message_data['type'] ?? 'info';
+        $message_text = $message_data['message'] ?? '';
+
+        if ($message_text) {
+            $title = sprintf(
+                [
+                    'info' => __('%s Information', Strings::Domain),
+                    'error' => __('%s Error', Strings::Domain),
+                    'success' => __('%s Success', Strings::Domain),
+                    'warning' => __('%s Warning', Strings::Domain),
+                ][$message_type],
+                esc_html(Strings::PluginName)
+            );
             // Display the error message.
-            echo '<div class="notice notice-error is-dismissible">';
+            echo '<div class="notice notice-' . $message_type . ' is-dismissible">';
             echo '<p>';
-            echo '<strong>' . Strings::PluginName . ' Error: </strong>';
-            echo esc_html($error_message);
+            echo '<strong>' . $title . '</strong>';
+            echo esc_html($message_text);
             echo '</p>';
             echo '</div>';
             // Optionally, delete the transient so the message is shown only once.
-            delete_transient(Strings::ApiErrorTransient);
+            delete_transient(Strings::ApiNoticeTransient);
         }
     }
 
@@ -204,7 +233,7 @@ class UI
      */
     function render_api_key_section()
     {
-        $api_key = $this->get_api_key();
+        $api_key = $this->settings->get_api_key();
 
         // Include the API key section template.
         include($this->templates_path . 'api-key-section.php');
@@ -228,7 +257,7 @@ class UI
      */
     function render_page_indexing_section()
     {
-        $processed_count = $this->get_processed_post_count();
+        $processed_count = $this->db->get_processed_post_count();
         $total_count = $this->get_total_post_count();
         $remaining_count = $total_count - $processed_count;
 
@@ -263,16 +292,17 @@ class UI
                 // Call your remote API to register plugin and get new API key
                 $new_key = $this->get_api_key_from_remote();
                 if (is_wp_error($new_key) || empty($new_key)) {
-                    set_transient(Strings::ApiErrorTransient, __('Error generating API key.', Strings::Domain), 30);
+                    $this->show_error_notice(__('Error generating API key.', Strings::Domain));
                 } else {
-                    update_option(Strings::ApiKeyOption, sanitize_text_field($new_key));
+                    $this->show_success_notice(__('API key generated successfully.', Strings::Domain));
                 }
             } elseif (isset($_POST['thinkpixel_regenerate_api_key'])) {
                 // Call your remote API to regenerate key
                 $refreshed_key = $this->refresh_api_key_remote();
                 if (is_wp_error($refreshed_key) || empty($refreshed_key)) {
-                    set_transient(Strings::ApiErrorTransient, __('Error regenerating API key.', Strings::Domain), 30);
+                    $this->show_error_notice(__('Error regenerating API key.', Strings::Domain));
                 } else {
+                    $this->show_success_notice(__('API key regenerated successfully.', Strings::Domain));
                     $this->settings->store_api_key($refreshed_key);
                 }
             }
@@ -292,14 +322,50 @@ class UI
                 if (is_array($skip_ids) && ! empty($skip_ids)) {
                     $skip_ids = $this->api->remove_posts_from_index($skip_ids);
                     if (empty($skip_ids)) {
-                        set_transient(Strings::ApiErrorTransient, __('Error skipping pages.', Strings::Domain), 30);
+                        $this->show_error_notice(__('Error skipping pages.', Strings::Domain));
                     }
                     $this->db->update_skip_status_for_posts($skip_ids, 1);
                 } else {
-                    set_transient(Strings::ApiErrorTransient, __('No pages selected.', Strings::Domain), 30);
+                    $this->show_error_notice(__('No pages selected.', Strings::Domain));
                 }
             }
         }
+    }
+
+    /**
+     * Initiates the process to get a new API key from the remote server.
+     * 
+     * This function will call the remote API to register the site and retrieve a new API key.
+     */
+    public function request_new_api_key(): bool
+    {
+        try {
+            $site_stats = $this->db->calculate_site_stats();
+            $response = $this->api->register_site($site_stats);
+            $validation_token = $response['validation_token'];
+            $validation_token_expires_at = $response['validation_token_expires_at'];
+            $this->settings->store_validation_token($validation_token, $validation_token_expires_at);
+            return true;
+        } catch (\Exception $e) {
+            error_log(Strings::PluginName . ' registration error: ' . $e->getMessage());
+        }
+        return false;
+    }
+
+    function wait_for_api_key(): ?string
+    {
+        // Measure the time it took to get the API key
+        $start_time = microtime(true);
+        $php_timeout = floor(max(10, ini_get('max_execution_time') * 0.9)); // Use 90% of the max execution time, but at least 10 seconds
+        while (microtime(true) - $start_time < $php_timeout) {
+            // Wait for the validation token to be set
+            $api_key = $this->settings->get_api_key();
+            if ($api_key) {
+                return $api_key;
+            }
+            sleep(1); // Sleep for 1 seconds
+        }
+        return null;
     }
 
     /**
@@ -307,9 +373,26 @@ class UI
      *
      * @return string The new API key.
      */
-    function get_api_key_from_remote(): string
+    public function get_api_key_from_remote(): ?string
     {
-        return '';
+        // First, let's delete any existing API key
+        $this->settings->delete_api_key();
+
+        // Request a new API key from the remote server
+        if (!$this->request_new_api_key()) {
+            $this->show_error_notice(__('Error requesting new API key.', Strings::Domain));
+            return null;
+        }
+
+        // Wait for the API key to be set
+        $api_key = $this->wait_for_api_key();
+
+        if (!$api_key) {
+            $this->show_error_notice(__('Timeout while waiting for API key.', Strings::Domain));
+            return null;
+        }
+
+        return $api_key;
     }
 
     /**

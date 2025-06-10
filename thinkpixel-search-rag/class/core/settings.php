@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.1.2
+ * @version 1.2.0
  */
 class Settings
 {
@@ -59,6 +59,16 @@ class Settings
         list($iv, $encrypted_key) = explode('::', base64_decode($stored_value), 2);
 
         return openssl_decrypt($encrypted_key, 'aes-256-cbc', $encryption_key, 0, $iv);
+    }
+
+    /**
+     * Deletes the stored API key from the database.
+     *
+     * @return void
+     */
+    public function delete_api_key(): void
+    {
+        delete_option(Strings::ApiKeyOption);
     }
 
     /**

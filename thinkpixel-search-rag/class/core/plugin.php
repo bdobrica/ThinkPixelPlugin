@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.1.2
+ * @version 1.2.0
  */
 class Plugin
 {
@@ -59,15 +59,7 @@ class Plugin
     private function register_site(): void
     {
         if ($this->settings->has_api_key()) return;
-        try {
-            $site_stats = $this->db->calculate_site_stats();
-            $response = $this->api->register_site($site_stats);
-            $validation_token = $response['validation_token'];
-            $validation_token_expires_at = $response['validation_token_expires_at'];
-            $this->settings->store_validation_token($validation_token, $validation_token_expires_at);
-        } catch (\Exception $e) {
-            error_log(Strings::PluginName . ' registration error: ' . $e->getMessage());
-        }
+        $this->ui->request_new_api_key();
     }
 
     /**

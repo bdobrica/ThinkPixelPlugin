@@ -4,7 +4,7 @@ Donate link: https://thinkpixel.io
 Tags: ai, semantic search, rag, embeddings, natural language processing
 Requires at least: 4.7
 Tested up to: 6.7
-Stable tag: 1.1.2
+Stable tag: 1.2.0
 Requires PHP: 7.4
 License: Apache-2.0
 License URI: https://www.apache.org/licenses/LICENSE-2.0
@@ -78,6 +78,10 @@ We only store embeddings (numeric representations) of your content; raw content 
 1. **ThinkPixel Sync Settings** – A look at the simple admin settings page where you can configure and store your API key.
 
 == Changelog ==
+
+= 1.2.0 =
+* **Feature**: Change in how the request API Key logic: moved request from Plugin class to UI class.
+* **Feature**: Allow multiple types (error, info, warning, success) of notifications in admin area.
 
 = 1.1.2 =
 * **Bug**: Normalized verification API responses.

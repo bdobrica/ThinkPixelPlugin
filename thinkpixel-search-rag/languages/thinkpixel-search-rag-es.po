@@ -4,11 +4,23 @@ msgstr ""
 "Language: es\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 
+msgid "%s Information"
+msgstr "Información de %s"
+
+msgid "%s Error"
+msgstr "%s Error"
+
+msgid "%s Success"
+msgstr "%s Éxito"
+
+msgid "%s Warning"
+msgstr "%s Advertencia"
+
 msgid "ThinkPixel Search RAG Settings"
-msgstr "Configuraciones de Búsqueda RAG de ThinkPixel"
+msgstr "Configuración RAG de Búsqueda ThinkPixel"
 
 msgid "ThinkPixel Search RAG"
-msgstr "ThinkPixel Buscar RAG"
+msgstr "Busqueda RAG de ThinkPixel"
 
 msgid "Now"
 msgstr "Ahora"
@@ -17,7 +29,7 @@ msgid "minutes ago"
 msgstr "hace minutos"
 
 msgid "1 hour ago"
-msgstr "hace 1 hora"
+msgstr "Hace 1 hora"
 
 msgid "Today"
 msgstr "Hoy"
@@ -41,22 +53,34 @@ msgid "Error calling bulk processing API."
 msgstr "Error al llamar a la API de procesamiento masivo."
 
 msgid "Bulk processing API returned an error."
-msgstr "La API de procesamiento masivo devolvió un error."
+msgstr "La API de procesamiento por lotes devolvió un error."
 
 msgid "Settings"
 msgstr "Configuración"
 
 msgid "Error generating API key."
-msgstr "Error al generar la clave de API."
+msgstr "Error al generar la clave API."
+
+msgid "API key generated successfully."
+msgstr "Clave de API generada con éxito."
 
 msgid "Error regenerating API key."
-msgstr "Error al regenerar la clave de API."
+msgstr "Error al regenerar la clave API."
+
+msgid "API key regenerated successfully."
+msgstr "La clave de API se ha regenerado con éxito."
 
 msgid "Error skipping pages."
 msgstr "Error al omitir páginas."
 
 msgid "No pages selected."
-msgstr "No se han seleccionado páginas."
+msgstr "No se seleccionaron páginas."
+
+msgid "Error requesting new API key."
+msgstr "Error al solicitar una nueva clave de API."
+
+msgid "Timeout while waiting for API key."
+msgstr "Tiempo de espera agotado mientras se esperaba la clave API."
 
 msgid "API Health Status"
 msgstr "Estado de Salud de la API"
@@ -65,7 +89,7 @@ msgid "Status"
 msgstr "Estado"
 
 msgid "Checking ThinkPixel API availability..."
-msgstr "Comprobando la disponibilidad de la API de ThinkPixel..."
+msgstr "Verificando la disponibilidad de la API de ThinkPixel..."
 
 msgid "Version"
 msgstr "Versión"
@@ -80,40 +104,40 @@ msgid "Manage your ThinkPixel API Key."
 msgstr "Administra tu clave API de ThinkPixel."
 
 msgid "Current API Key"
-msgstr "Clave de API actual"
+msgstr "Clave API Actual"
 
 msgid "Save API Key"
-msgstr "Guardar clave API"
+msgstr "Guardar clave de API"
 
 msgid "Actions"
 msgstr "Acciones"
 
 msgid "Regenerate API Key"
-msgstr "Regenerar clave API"
+msgstr "Regenerar clave de API"
 
 msgid "Request New API Key"
-msgstr "Solicitar nueva clave de API"
+msgstr "Solicitar nueva clave API"
 
 msgid "Generate API Key"
 msgstr "Generar clave API"
 
 msgid "Page Indexing Status"
-msgstr "Estado de Indexación de la Página"
+msgstr "Estado de Indexación de Página"
 
 msgid "Indexed Pages"
-msgstr "Páginas Indexadas"
+msgstr "Páginas indexadas"
 
 msgid "Remaining Pages"
-msgstr "Páginas Restantes"
+msgstr "Páginas restantes"
 
 msgid "Run Bulk Indexing"
 msgstr "Ejecutar Indexación Masiva"
 
 msgid "Skip Pages and Posts"
-msgstr "Omitir páginas y publicaciones"
+msgstr "Omitir Páginas y Publicaciones"
 
 msgid "Search for pages and posts to skip from indexing."
-msgstr "Buscar páginas y publicaciones para omitir de la indexación."
+msgstr "Buscar páginas y publicaciones para omitir en la indexación."
 
 msgid "Enter page/post title..."
 msgstr "Ingrese el título de la página/publicación..."

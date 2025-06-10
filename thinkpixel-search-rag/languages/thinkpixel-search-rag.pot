@@ -1,15 +1,31 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 1.0.0\n"
+"Project-Id-Version: 1.1.2\n"
 "Report-Msgid-Bugs-To: Bogdan Dobrica <bdobrica@gmail.com>\n"
-"POT-Creation-Date: 2025-06-09 17:16:48\n"
+"POT-Creation-Date: 2025-06-10 12:49:17\n"
 "Last-Translator: Bogdan Dobrica <bdobrica@gmail.com>\n"
 "Language-Team: English\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. class/core/ui.php
+msgid "%s Information"
+msgstr ""
+
+#. class/core/ui.php
+msgid "%s Error"
+msgstr ""
+
+#. class/core/ui.php
+msgid "%s Success"
+msgstr ""
+
+#. class/core/ui.php
+msgid "%s Warning"
+msgstr ""
 
 #. class/core/ui.php
 msgid "ThinkPixel Search RAG Settings"
@@ -72,7 +88,15 @@ msgid "Error generating API key."
 msgstr ""
 
 #. class/core/ui.php
+msgid "API key generated successfully."
+msgstr ""
+
+#. class/core/ui.php
 msgid "Error regenerating API key."
+msgstr ""
+
+#. class/core/ui.php
+msgid "API key regenerated successfully."
 msgstr ""
 
 #. class/core/ui.php
@@ -81,6 +105,14 @@ msgstr ""
 
 #. class/core/ui.php
 msgid "No pages selected."
+msgstr ""
+
+#. class/core/ui.php
+msgid "Error requesting new API key."
+msgstr ""
+
+#. class/core/ui.php
+msgid "Timeout while waiting for API key."
 msgstr ""
 
 #. templates/api-health-section.php

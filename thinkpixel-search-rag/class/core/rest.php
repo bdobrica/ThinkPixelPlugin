@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.1.1
+ * @version 1.1.2
  */
 class Rest
 {
@@ -179,14 +179,14 @@ class Rest
 
         if (!wp_verify_nonce($nonce, Strings::KeyExchangeNonce)) {
             return new \WP_REST_Response([
-                'success' => 'error',
+                'success' => 'false',
                 'message' => 'Failed to verify nonce ' . $nonce,
             ], 403);
         }
 
         $this->store_api_key($api_key);
         return new \WP_REST_Response([
-            'success' => 'ok',
+            'success' => 'true',
             'message' => 'API key stored successfully',
         ], 200);
     }
@@ -244,7 +244,7 @@ class Rest
         $this->process_posts();
 
         return new \WP_REST_Response([
-            'success' => 'ok',
+            'success' => 'true',
             'unprocessed_count' => $this->get_unprocessed_post_count(),
             'processed_count' => $this->get_processed_post_count(),
             'message' => 'Bulk post processing complete',
@@ -285,7 +285,7 @@ class Rest
         $data = $this->db->get_posts_skip_status_by_keyword($query, $limit, $offset);
 
         return new \WP_REST_Response([
-            'success' => 'ok',
+            'success' => 'true',
             'data' => $data,
         ], 200);
     }

@@ -20,7 +20,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.1.1
+ * @version 1.1.2
  */
 class Api
 {
@@ -306,7 +306,7 @@ class Api
         // Check if there was an error in the response.
         if (is_wp_error($response)) {
             return new \WP_REST_Response([
-                'success' => 'error',
+                'success' => 'false',
                 'message' => 'Error pinging API',
             ], 500);
         }

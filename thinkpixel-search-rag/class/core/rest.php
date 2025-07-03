@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.2.0
+ * @version 1.3.0
  */
 class Rest
 {
@@ -357,9 +357,9 @@ class Rest
         $sample_post = get_post($sample_post_id);
         $post_title = apply_filters('the_title', $sample_post->post_title);
         $html_content = $post_title . PHP_EOL . apply_filters('the_content', $sample_post->post_content);
-        $text_content = Strings::wp_html_to_plain_text($html_content);
+        $md_content = HTML2MD::convert($html_content);
         $report['sample_post_html'] = $html_content;
-        $report['sample_post_text'] = $text_content;
+        $report['sample_post_text'] = $md_content;
 
         $result = $this->api->do_search($sample_post->post_title);
         $error = $this->api->get_last_error();

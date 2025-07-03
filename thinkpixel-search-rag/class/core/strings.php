@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.2.0
+ * @version 1.3.0
  */
 class Strings
 {
@@ -26,7 +26,7 @@ class Strings
     /**
      * The version of the plugin.
      */
-    const PluginVersion = '1.2.0';
+    const PluginVersion = '1.3.0';
 
     /**
      * The plugin identifier.
@@ -89,6 +89,11 @@ class Strings
     const StoreEndpoint = self::ApiUrl . '/store';
 
     /**
+     * The endpoint for retrieving the maximum batch text size.
+     */
+    const MaxBatchTextSizeEndpoint = self::ApiUrl . '/store/max_batch_text_size';
+
+    /**
      * The endpoint for removing item embeddings.
      */
     const RemoveItemsFromIndexEndpoint = self::ApiUrl . '/remove/embeddings';
@@ -102,6 +107,11 @@ class Strings
      * The transient key for storing the JWT token.
      */
     const JWTTransient = self::Plugin . '_jwt';
+
+    /**
+     * The transient key for maximum batch text size.
+     */
+    const MaxBatchTextSizeTransient = self::Plugin . '_max_batch_text_size';
 
     /**
      * The plugin rest namespace.
@@ -197,107 +207,4 @@ class Strings
      * Transient key for storing the validation token.
      */
     const ValidationTokenTransient = self::Plugin . '_validation_token';
-
-    /**
-     * Collapse repeated whitespace:
-     * - If the group of whitespace contains at least one line break
-     *      (\n, \r, or \r\n), it is replaced with a single newline (\n).
-     * - If the group of whitespace does not contain any line break,
-     *      it is replaced with a single space ( ).
-     *
-     * @param string $text The input text.
-     * @return string The text with collapsed whitespace.
-     */
-    public static function collapse_whitespace($text)
-    {
-        $text = preg_replace_callback(
-            '/\s+/', // Matches one or more whitespace characters
-            function ($matches) {
-                $whitespace = $matches[0];
-                // Check if there's any line break in this group
-                if (preg_match('/[\r\n]/', $whitespace)) {
-                    // If so, replace the entire group with one newline
-                    return "\n";
-                }
-                // Otherwise, replace with a single space
-                return ' ';
-            },
-            $text
-        );
-
-        return trim($text);
-    }
-
-    /**
-     * Converts HTML content to plain text.
-     *
-     * @param string $html The HTML content.
-     * @return string The plain text content.
-     */
-    public static function wp_html_to_plain_text(string $html): string
-    {
-        // 1) Convert <img> tags:
-        //    (image about <alt|title>) if either alt or title is present, otherwise (image).
-        $html = preg_replace_callback(
-            '/<img\b[^>]*>/i',
-            function ($matches) {
-                $img_tag = $matches[0];
-
-                // Extract alt attribute
-                $alt = '';
-                if (preg_match('/alt\s*=\s*"([^"]*)"/i', $img_tag, $alt_matches)) {
-                    $alt = trim($alt_matches[1]);
-                }
-                // Extract title attribute
-                $title = '';
-                if (preg_match('/title\s*=\s*"([^"]*)"/i', $img_tag, $title_matches)) {
-                    $title = trim($title_matches[1]);
-                }
-
-                if (! empty($alt)) {
-                    return '(image about ' . $alt . ')';
-                } elseif (! empty($title)) {
-                    return '(image about ' . $title . ')';
-                } else {
-                    return '(image)';
-                }
-            },
-            $html
-        );
-
-        // 2) Convert <a> tags:
-        //    (link to <title>) if the title attribute is present, otherwise (link).
-        $html = preg_replace_callback(
-            '/<a\b[^>]*>(.*?)<\/a>/is',
-            function ($matches) {
-                $a_tag_content = $matches[0];
-                // Extract title attribute
-                $title = '';
-                if (preg_match('/title\s*=\s*"([^"]*)"/i', $a_tag_content, $title_matches)) {
-                    $title = trim($title_matches[1]);
-                }
-
-                if (! empty($title)) {
-                    return '(link to ' . $title . ')';
-                } else {
-                    return '(link)';
-                }
-            },
-            $html
-        );
-
-        // 3) Remove all remaining HTML tags to get plain text.
-        $text_output = strip_tags($html);
-
-        // 4) Convert special HTML entities (e.g., &#8217;) to their corresponding Unicode characters.
-        //    This handles both numeric and named entities.
-        $text_output = html_entity_decode($text_output, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-
-        // 5) Normalize whitespace
-        //    - Any sequence of spaces/tabs becomes a single space
-        //    - Each line-break character (\r, \n, \r\n) becomes a single \n
-        $text_output = self::collapse_whitespace($text_output);
-
-        return $text_output;
-    }
 }

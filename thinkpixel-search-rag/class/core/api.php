@@ -20,13 +20,15 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.2.0
+ * @version 1.3.0
  */
 class Api
 {
     private $get_api_key_callback;
     private $last_error;
     private $last_latency;
+    private $post_timeout;
+    private $ping_timeout;
 
     /**
      * Constructor for the Api class.
@@ -38,8 +40,21 @@ class Api
         $this->get_api_key_callback = $get_api_key_callback;
         $this->last_error = null;
         $this->last_latency = null;
+        // Set request timeouts based on server settings.
+        // The post_timeout is set to the minimum of 30 seconds, 90% of the max execution time, and the default socket timeout.
+        // This ensures that the API requests do not exceed the server's execution limits.
+        // Filter out values less than or equal to 0 (which means infinite timeout)
+        $this->post_timeout = min(array_filter([
+            30,
+            (int) (0.9 * (int)ini_get('max_execution_time') ?: 30),
+            (int) (ini_get('default_socket_timeout') ?: 30),
+        ], function ($v) {
+            return $v > 0;
+        }));
+        $this->ping_timeout = 1;
         // add_action('wp_ajax_' . Strings::Plugin, [$this, 'api']);
     }
+
 
     /**
      * Registers the site with the ThinkPixel API.
@@ -67,6 +82,7 @@ class Api
         $response = wp_remote_post(Strings::RegisterEndpoint, [
             'headers' => ['Content-Type' => 'application/json'],
             'body' => json_encode($site_data),
+            'timeout' => $this->post_timeout, // Set the timeout for the request.
         ]);
         // Calculate the latency.
         $this->last_latency = microtime(true) - $start_time;
@@ -87,7 +103,74 @@ class Api
     }
 
     /**
+     * Gets the maximum batch text size for a batch of posts.
+     * This method is used to determine the maximum size of text that can be sent in a single batch to the ThinkPixel API.
+     * 
+     * @return int The maximum batch text size in bytes. Defaults to 1024 bytes if not set in the response.
+     */
+    private function fetch_max_batch_text_size(): int
+    {
+        $start_time = microtime(true);
+        $response = wp_remote_post(Strings::MaxBatchTextSizeEndpoint, [
+            'headers' => [
+                "Authorization" => 'Bearer ' . $this->get_jwt(),
+                'Content-Type' => 'application/json',
+            ],
+            'body' => json_encode([
+                'timeout' => $this->post_timeout, // Allow the API to set a custom timeout based on client timeout.
+            ]),
+            'timeout' => $this->post_timeout, // Set the timeout for the request.
+        ]);
+        $this->last_latency = microtime(true) - $start_time;
+
+        $max_batch_text_size = 1024; // Default value if not set in the response.
+        $max_batch_text_size_expires_at = 2 * HOUR_IN_SECONDS; // Default expiration time.
+
+        // Check if the response is an error.
+        if (is_wp_error($response)) {
+            error_log('Error fetching max batch text size: ' . $response->get_error_message());
+        } else {
+            // Decode the response body.
+            $body = wp_remote_retrieve_body($response);
+            $data = json_decode($body, true);
+
+            // Log the response for debugging.
+            error_log('Max batch text size response: ' . var_export($data, true));
+            // Check if the data is valid and contains the max batch text size.
+            if (isset($data['max_batch_text_size']) && is_int($data['max_batch_text_size'])) {
+                $max_batch_text_size = (int) $data['max_batch_text_size'];
+                $max_batch_text_size_expires_at = $data['exp'] ? (int) $data['exp'] - time() : 12 * HOUR_IN_SECONDS;
+                // Store the max batch text size in a transient for caching.
+            }
+            // If the response is invalid, log an error and return a default value.
+            error_log('Invalid response fetching max batch text size: ' . $body);
+        }
+
+        set_transient(Strings::MaxBatchTextSizeTransient, $max_batch_text_size, $max_batch_text_size_expires_at);
+        return $max_batch_text_size;
+    }
+
+    /**
+     * Gets the maximum batch text size, either from the transient or by fetching it from the API.
+     * 
+     * @return int The maximum batch text size in bytes.
+     */
+    private function get_max_batch_text_size(): int
+    {
+        // Try to get the max batch text size from the transient.
+        $max_batch_text_size = get_transient(Strings::MaxBatchTextSizeTransient);
+        if ($max_batch_text_size !== false) {
+            return $max_batch_text_size;
+        }
+
+        // If the transient is not set, fetch it from the API.
+        $max_batch_text_size = $this->fetch_max_batch_text_size();
+        return $max_batch_text_size;
+    }
+
+    /**
      * Processes raw posts data and sends it to the ThinkPixel API.
+     * Note: This method processes posts in batches, ensuring that the total size of the batch does not exceed the maximum allowed size. So not all posts may be processed in one go.
      *
      * @param array $unprocessed_ids Array of unprocessed post IDs.
      * @return array Array of processed post IDs.
@@ -96,18 +179,28 @@ class Api
     {
         $pages_data = [];
 
+        $max_batch_text_size = $this->get_max_batch_text_size(); // Get the maximum batch text size.
+        $current_batch_size = 0; // Initialize the current batch size.
+
         // Loop through each unprocessed post ID.
         foreach ($unprocessed_ids as $unprocessed_id) {
             $post = get_post($unprocessed_id); // Get the post object.
             $title = apply_filters('the_title', $post->post_title); // Apply filters to the post title.
             $html_content = apply_filters('the_content', $post->post_content); // Apply filters to the post content.
             $html_content = $title . PHP_EOL . $html_content; // Combine title and content.
-            $text_content = Strings::wp_html_to_plain_text($html_content); // Convert HTML content to plain text.
+            $md_content = HTML2MD::convert($html_content); // Convert HTML content to Markdown.
+            $md_content_size = strlen($md_content); // Get the size of the Markdown content.
+
+            if ($current_batch_size > 0 && ($current_batch_size + $md_content_size) > $max_batch_text_size) {
+                // If adding this post exceeds the max batch size, send the current batch.
+                break;
+            }
+            $current_batch_size += $md_content_size; // Update the current batch size.
 
             // Prepare the data for each post.
             $pages_data[] = [
                 'id' => $post->ID,
-                'text' => $text_content,
+                'text' => $md_content,
                 'extra' => [
                     'title' => $post->post_title,
                     'type' => $post->post_type,
@@ -123,12 +216,17 @@ class Api
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $this->get_jwt(), // Add authorization header.
             ],
-            'timeout' => 30, // Set the timeout.
+            'timeout' => $this->post_timeout, // Set the timeout.
         ]);
         $this->last_latency = microtime(true) - $start_time; // Calculate the latency.
 
         // Log the API response.
         error_log(Strings::StoreEndpoint . ' response ' . var_export($response, true));
+
+        // Decode the response body.
+        if (isset($response->stored_ids) && is_array($response->stored_ids) && count($response->stored_ids) > 0) {
+            return $response->stored_ids; // Return the stored IDs if available.
+        }
 
         // Check for errors in the response.
         if (isset($response->error)) {
@@ -184,6 +282,7 @@ class Api
             'body' => json_encode([
                 'text' => $search_query,
             ]),
+            'timeout' => $this->post_timeout, // Set the timeout for the request.
         ]);
         $this->last_latency = microtime(true) - $start_time;
 
@@ -218,6 +317,7 @@ class Api
                 'Content-Type' => 'application/json',
             ],
             'body' => json_encode([]),
+            'timeout' => $this->post_timeout, // Set the timeout for the request.
         ]);
         $this->last_latency = microtime(true) - $start_time;
 
@@ -256,6 +356,7 @@ class Api
             'headers' => [
                 'X-API-Key' => $api_key,
             ],
+            'timeout' => $this->post_timeout, // Set the timeout for the request.
         ]);
         $this->last_latency = microtime(true) - $start_time;
 
@@ -301,7 +402,9 @@ class Api
     public function ping(\WP_REST_Request $request): \WP_REST_Response
     {
         // Send a GET request to the API.
-        $response = wp_remote_get(Strings::PingEndpoint);
+        $response = wp_remote_get(Strings::PingEndpoint, [
+            'timeout' => $this->ping_timeout, // Set the timeout for the request.
+        ]);
 
         // Check if there was an error in the response.
         if (is_wp_error($response)) {
@@ -329,6 +432,7 @@ class Api
             'body' => json_encode([
                 'ids' => $post_ids,
             ]),
+            'timeout' => $this->post_timeout, // Set the timeout for the request.
         ]);
         $this->last_latency = microtime(true) - $start_time;
 

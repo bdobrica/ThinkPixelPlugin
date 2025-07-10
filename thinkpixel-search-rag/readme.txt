@@ -79,6 +79,9 @@ We only store embeddings (numeric representations) of your content; raw content 
 
 == Changelog ==
 
+= 1.3.1 =
+* **Bug**: Fixed the HTML2MD converter by adding a body element to the HTML fragment.
+
 = 1.3.0 =
 * **Feature**: added API object configurable timeouts based on php.ini settings;
 * **Feature**: added HTML to MarkDown converter for normalizing text at machine learning model input;

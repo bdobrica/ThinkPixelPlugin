@@ -14,7 +14,7 @@ namespace ThinkPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.3.0
+ * @version 1.3.1
  */
 
 class HTML2MD
@@ -30,12 +30,19 @@ class HTML2MD
         // Load HTML as DOMDocument
         $doc = new \DOMDocument();
         // Suppress warnings from malformed HTML
+
+        if (strpos($html, '<body') === false) {
+            // If no <body> tag, wrap the HTML in a <body> tag
+            $html = '<body>' . $html . '</body>';
+        }
+
         @$doc->loadHTML('<?xml encoding="utf-8" ?>' . $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
         // Start recursive conversion
-        $markdown = HTML2MD::convertNode($doc->documentElement ?? $doc);
+        $node = $doc->documentElement ?? $doc->getElementsByTagName('body')->item(0);
+        $markdown = HTML2MD::convertNode($node);
 
-        return $markdown;
+        return trim($markdown);
     }
 
     /**

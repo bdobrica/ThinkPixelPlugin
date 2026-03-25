@@ -1,0 +1,161 @@
+#
+msgid ""
+msgstr ""
+"Language: fr\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "API Health Status"
+msgstr "État de santé de l'API"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "Checking SearchPixel API availability..."
+msgstr "Vérification de la disponibilité de l'API SearchPixel..."
+
+msgid "Version"
+msgstr "Version"
+
+msgid "Unknown"
+msgstr "Inconnu"
+
+msgid "API Key"
+msgstr "Clé API"
+
+msgid "Manage your SearchPixel API Key."
+msgstr "Gérez votre clé API SearchPixel."
+
+msgid "Current API Key"
+msgstr "Clé API actuelle"
+
+msgid "Save API Key"
+msgstr "Enregistrer la clé API"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Regenerate API Key"
+msgstr "Régénérer la clé API"
+
+msgid "Request New API Key"
+msgstr "Demander une nouvelle clé API"
+
+msgid "Generate API Key"
+msgstr "Générer Clé API"
+
+msgid "Page Indexing Status"
+msgstr "Statut d'Indexation de la Page"
+
+msgid "Indexed Pages"
+msgstr "Pages indexées"
+
+msgid "Remaining Pages"
+msgstr "Pages restantes"
+
+msgid "Run Bulk Indexing"
+msgstr "Exécuter l'indexation en masse"
+
+msgid "SearchPixel Settings"
+msgstr "Paramètres de SearchPixel"
+
+msgid "Skip Pages and Posts"
+msgstr "Passer des pages et des articles"
+
+msgid "Search for pages and posts to skip from indexing."
+msgstr "Rechercher des pages et des articles à exclure de l'indexation."
+
+msgid "Enter page/post title..."
+msgstr "Entrez le titre de la page/publication..."
+
+msgid "Search"
+msgstr "Recherche"
+
+msgid "Reset"
+msgstr "Réinitialiser"
+
+msgid "Title"
+msgstr "Titre"
+
+msgid "Indexed"
+msgstr "Indexé"
+
+msgid "Updated At"
+msgstr "Mis à jour le"
+
+msgid "Skip Selected Pages"
+msgstr "Passer les pages sélectionnées"
+
+msgid "%s Information"
+msgstr "Informations sur %s"
+
+msgid "%s Error"
+msgstr "Erreur %s"
+
+msgid "%s Success"
+msgstr "%s Réussite"
+
+msgid "%s Warning"
+msgstr "%s Avertissement"
+
+msgid "SearchPixel"
+msgstr "SearchPixel"
+
+msgid "Now"
+msgstr "Maintenant"
+
+msgid "minutes ago"
+msgstr "il y a quelques minutes"
+
+msgid "1 hour ago"
+msgstr "Il y a 1 heure"
+
+msgid "Today"
+msgstr "Aujourd'hui"
+
+msgid "OK"
+msgstr "D'accord"
+
+msgid "Error"
+msgstr "Erreur"
+
+msgid "Please enter at least 2 characters."
+msgstr "Veuillez entrer au moins 2 caractères."
+
+msgid "Bulk processing completed successfully."
+msgstr "Traitement en masse terminé avec succès."
+
+msgid "An error occurred during bulk indexing:"
+msgstr "Une erreur s'est produite lors de l'indexation en masse :"
+
+msgid "Error calling bulk processing API."
+msgstr "Erreur lors de l'appel de l'API de traitement en masse."
+
+msgid "Bulk processing API returned an error."
+msgstr "L'API de traitement en masse a renvoyé une erreur."
+
+msgid "Settings"
+msgstr "Paramètres"
+
+msgid "Error generating API key."
+msgstr "Erreur lors de la génération de la clé API."
+
+msgid "API key generated successfully."
+msgstr "Clé API générée avec succès."
+
+msgid "Error regenerating API key."
+msgstr "Erreur lors de la régénération de la clé API."
+
+msgid "API key regenerated successfully."
+msgstr "Clé API régénérée avec succès."
+
+msgid "Error skipping pages."
+msgstr "Erreur de saut de pages."
+
+msgid "No pages selected."
+msgstr "Aucune page sélectionnée."
+
+msgid "Error requesting new API key."
+msgstr "Erreur lors de la demande d'une nouvelle clé API."
+
+msgid "Timeout while waiting for API key."
+msgstr "Délai d'attente dépassé lors de la réception de la clé API."

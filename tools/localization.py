@@ -122,7 +122,7 @@ def get_project_version(config_file):
 
 
 if __name__ == "__main__":
-    plugin_slug = "thinkpixel-search-rag"
+    plugin_slug = "searchpixel"
     plugin_directory = Path(__file__).parent.parent / plugin_slug
 
     if not plugin_directory.exists():

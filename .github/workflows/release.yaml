@@ -21,12 +21,12 @@ jobs:
       - name: Extract text domain from Strings.php
         id: domain
         run: |
-          DOMAIN=$(grep -Po "const\s+Domain\s*=\s*'\K[^']+" thinkpixel-search-rag/class/core/strings.php)
+          DOMAIN=$(grep -Po "const\s+Domain\s*=\s*'\K[^']+" searchpixel/class/core/strings.php)
           echo "TEXT_DOMAIN=$DOMAIN" >> $GITHUB_ENV
 
       - name: Replace Strings::Domain with actual domain
         run: |
-          find thinkpixel-search-rag -type f -name "*.php" -exec \
+          find searchpixel -type f -name "*.php" -exec \
           sed -i "s/Strings::Domain/'${{ env.TEXT_DOMAIN }}'/g" {} +
 
       - name: Extract new version from .bumpversion.cfg
@@ -35,7 +35,7 @@ jobs:
 
       - name: Zip the plugin folder
         run: |
-          zip -r thinkpixel-search-rag-${{ env.VERSION }}.zip thinkpixel-search-rag
+          zip -r searchpixel-${{ env.VERSION }}.zip searchpixel
 
       - name: Create GitHub Release
         id: create_release
@@ -51,6 +51,6 @@ jobs:
       - name: Upload ZIP to Release
         uses: softprops/action-gh-release@v1
         with:
-          files: thinkpixel-search-rag-${{ env.VERSION }}.zip
+          files: searchpixel-${{ env.VERSION }}.zip
           token: ${{ secrets.RELEASE_TOKEN }}
           tag_name: ${{ env.VERSION }}

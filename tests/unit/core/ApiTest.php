@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use ThinkPixel\Core\Api;
+use SearchPixel\Core\Api;
 
 interface CallableMock
 {
@@ -19,7 +19,7 @@ class ApiTest extends TestCase
             $this->markTestSkipped('The runkit7 extension is not loaded.');
         }
 
-        // Mock add_action function in the ThinkPixel\Core namespace
+        // Mock add_action function in the SearchPixel\Core namespace
         $mockAddAction = $this->createMock(CallableMock::class);
         $mockAddAction
             ->expects($this->once())
@@ -29,7 +29,7 @@ class ApiTest extends TestCase
             });
 
         // Override the add_action function
-        $this->overrideFunction('ThinkPixel\Core\add_action', $mockAddAction);
+        $this->overrideFunction('SearchPixel\Core\add_action', $mockAddAction);
 
         // Create an instance of the Api class
         $this->api = new Api();
@@ -75,9 +75,9 @@ class ApiTest extends TestCase
             ->willReturn(['response' => ['code' => 200]]);
 
         // Override the WordPress functions
-        $this->overrideFunction('ThinkPixel\Core\get_post', $mockGetPost);
-        $this->overrideFunction('ThinkPixel\Core\apply_filters', $mockApplyFilters);
-        $this->overrideFunction('ThinkPixel\Core\wp_remote_post', $mockWpRemotePost);
+        $this->overrideFunction('SearchPixel\Core\get_post', $mockGetPost);
+        $this->overrideFunction('SearchPixel\Core\apply_filters', $mockApplyFilters);
+        $this->overrideFunction('SearchPixel\Core\wp_remote_post', $mockWpRemotePost);
 
         // Run the method
         $processedIds = $this->api->process_posts([1, 2]);
@@ -113,13 +113,13 @@ class ApiTest extends TestCase
         $mockErrorLog
             ->expects($this->once())
             ->method('__invoke')
-            ->with('ThinkPixel API error: Failed to connect');
+            ->with('SearchPixel API error: Failed to connect');
 
         // Override the WordPress functions
-        $this->overrideFunction('ThinkPixel\Core\get_post', $mockGetPost);
-        $this->overrideFunction('ThinkPixel\Core\apply_filters', $mockApplyFilters);
-        $this->overrideFunction('ThinkPixel\Core\wp_remote_post', $mockWpRemotePost);
-        $this->overrideFunction('ThinkPixel\Core\error_log', $mockErrorLog);
+        $this->overrideFunction('SearchPixel\Core\get_post', $mockGetPost);
+        $this->overrideFunction('SearchPixel\Core\apply_filters', $mockApplyFilters);
+        $this->overrideFunction('SearchPixel\Core\wp_remote_post', $mockWpRemotePost);
+        $this->overrideFunction('SearchPixel\Core\error_log', $mockErrorLog);
 
         // Run the method
         $processedIds = $this->api->process_posts([1]);

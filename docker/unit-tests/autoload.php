@@ -17,9 +17,9 @@ foreach ($plugins as $plugin) {
 echo '=====================================' . PHP_EOL;
 
 spl_autoload_register(function ($class) {
-    $plugin_class_dir = '/opt/wordpress/wp-content/plugins/thinkpixel-search-rag/class/';
-    if (strncmp($class, 'ThinkPixel\\', 11) === 0) {
-        $class = substr($class, 11);
+    $plugin_class_dir = '/opt/wordpress/wp-content/plugins/searchpixel/class/';
+    if (strncmp($class, 'SearchPixel\\', 12) === 0) {
+        $class = substr($class, 12);
         if (FALSE === ($pos = strrpos($class, '\\'))) return;
 
         $file = $plugin_class_dir .

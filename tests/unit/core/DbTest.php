@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use ThinkPixel\Core\Db;
+use SearchPixel\Core\Db;
 
 interface WPDBMock
 {
@@ -46,7 +46,7 @@ class DbTest extends TestCase
 
     public function testGetTableName()
     {
-        $this->assertEquals('wp_thinkpixel', $this->db->get_table_name());
+        $this->assertEquals('wp_searchpixel', $this->db->get_table_name());
     }
 
     public function testCreateTable()

@@ -4,8 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ../../thinkpixel-search-rag:/opt/wordpress/wp-content/plugins/thinkpixel-search-rag
-      - ../../tests:/opt/tests/plugins/thinkpixel-search-rag/tests
+      - ../../searchpixel:/opt/wordpress/wp-content/plugins/searchpixel
+      - ../../tests:/opt/tests/plugins/searchpixel/tests
       - ./phpunit.xml:/opt/tests/phpunit.xml
       - ./autoload.php:/opt/tests/autoload.php
     depends_on:

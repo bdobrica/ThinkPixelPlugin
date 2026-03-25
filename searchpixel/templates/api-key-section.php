@@ -1,0 +1,49 @@
+<?php
+
+namespace SearchPixel\Core;
+?>
+<h2><?php esc_html_e('API Key', Strings::Domain); ?></h2>
+<p><?php esc_html_e('Manage your SearchPixel API Key.', Strings::Domain); ?></p>
+
+<form method="post" action="">
+    <?php
+    // This is a simple example of a POST form. 
+    // You could also do this with AJAX if you prefer.
+    // WP security (nonce field)
+    wp_nonce_field(Strings::ApiKeyAction, Strings::ApiKeyNonce);
+    ?>
+
+    <table class="form-table">
+        <tr>
+            <th scope="row"><?php esc_html_e('Current API Key', Strings::Domain); ?></th>
+            <td>
+                <?php if (! empty($api_key)) : ?>
+                    <?php $masked_key = str_repeat('*', max(0, strlen($api_key) - 4)) . substr($api_key, -4); ?>
+                    <input type="text" readonly value="<?php echo esc_attr($masked_key); ?>" size="40" />
+                <?php else : ?>
+                    <input type="text" value="" size="40" />
+                    <button type="submit" name="searchpixel_update_api_key" class="button button-primary">
+                        <?php esc_html_e('Save API Key', Strings::Domain); ?>
+                    </button>
+                <?php endif; ?>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row"><?php esc_html_e('Actions', Strings::Domain); ?></th>
+            <td>
+                <?php if (! empty($api_key)) : ?>
+                    <button type="submit" name="searchpixel_regenerate_api_key" class="button button-secondary">
+                        <?php esc_html_e('Regenerate API Key', Strings::Domain); ?>
+                    </button>
+                    <button type="submit" name="searchpixel_request_new_api_key" class="button button-secondary">
+                        <?php esc_html_e('Request New API Key', Strings::Domain); ?>
+                    </button>
+                <?php else : ?>
+                    <button type="submit" name="searchpixel_generate_api_key" class="button button-primary">
+                        <?php esc_html_e('Generate API Key', Strings::Domain); ?>
+                    </button>
+                <?php endif; ?>
+            </td>
+        </tr>
+    </table>
+</form>

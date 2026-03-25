@@ -1,0 +1,161 @@
+#
+msgid ""
+msgstr ""
+"Language: es\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "API Health Status"
+msgstr "Estado de Salud de la API"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "Checking SearchPixel API availability..."
+msgstr "Comprobando la disponibilidad de la API de SearchPixel..."
+
+msgid "Version"
+msgstr "Versión"
+
+msgid "Unknown"
+msgstr "Desconocido"
+
+msgid "API Key"
+msgstr "Clave de API"
+
+msgid "Manage your SearchPixel API Key."
+msgstr "Administra tu clave de API de SearchPixel."
+
+msgid "Current API Key"
+msgstr "Clave API Actual"
+
+msgid "Save API Key"
+msgstr "Guardar clave API"
+
+msgid "Actions"
+msgstr "Acciones"
+
+msgid "Regenerate API Key"
+msgstr "Regenerar clave API"
+
+msgid "Request New API Key"
+msgstr "Solicitar nueva clave API"
+
+msgid "Generate API Key"
+msgstr "Generar clave API"
+
+msgid "Page Indexing Status"
+msgstr "Estado de indexación de la página"
+
+msgid "Indexed Pages"
+msgstr "Páginas indexadas"
+
+msgid "Remaining Pages"
+msgstr "Páginas Restantes"
+
+msgid "Run Bulk Indexing"
+msgstr "Ejecutar Indexación en Masa"
+
+msgid "SearchPixel Settings"
+msgstr "Configuración de SearchPixel"
+
+msgid "Skip Pages and Posts"
+msgstr "Omitir Páginas y Publicaciones"
+
+msgid "Search for pages and posts to skip from indexing."
+msgstr "Buscar páginas y publicaciones para excluir del indexado."
+
+msgid "Enter page/post title..."
+msgstr "Ingrese el título de la página/publicación..."
+
+msgid "Search"
+msgstr "Buscar"
+
+msgid "Reset"
+msgstr "Restablecer"
+
+msgid "Title"
+msgstr "Título"
+
+msgid "Indexed"
+msgstr "Indexado"
+
+msgid "Updated At"
+msgstr "Actualizado el"
+
+msgid "Skip Selected Pages"
+msgstr "Saltar páginas seleccionadas"
+
+msgid "%s Information"
+msgstr "Información de %s"
+
+msgid "%s Error"
+msgstr "Error de %s"
+
+msgid "%s Success"
+msgstr "%s Éxito"
+
+msgid "%s Warning"
+msgstr "%s Advertencia"
+
+msgid "SearchPixel"
+msgstr "BuscarPíxel"
+
+msgid "Now"
+msgstr "Ahora"
+
+msgid "minutes ago"
+msgstr "hace minutos"
+
+msgid "1 hour ago"
+msgstr "Hace 1 hora"
+
+msgid "Today"
+msgstr "Hoy"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Error"
+msgstr "Error"
+
+msgid "Please enter at least 2 characters."
+msgstr "Por favor ingrese al menos 2 caracteres."
+
+msgid "Bulk processing completed successfully."
+msgstr "El procesamiento por lotes se completó con éxito."
+
+msgid "An error occurred during bulk indexing:"
+msgstr "Se produjo un error durante la indexación masiva:"
+
+msgid "Error calling bulk processing API."
+msgstr "Error al llamar a la API de procesamiento masivo."
+
+msgid "Bulk processing API returned an error."
+msgstr "La API de procesamiento por lotes devolvió un error."
+
+msgid "Settings"
+msgstr "Ajustes"
+
+msgid "Error generating API key."
+msgstr "Error al generar la clave API."
+
+msgid "API key generated successfully."
+msgstr "Clave API generada con éxito."
+
+msgid "Error regenerating API key."
+msgstr "Error al regenerar la clave de API."
+
+msgid "API key regenerated successfully."
+msgstr "La clave de API se ha regenerado con éxito."
+
+msgid "Error skipping pages."
+msgstr "Error al saltar páginas."
+
+msgid "No pages selected."
+msgstr "No se seleccionaron páginas."
+
+msgid "Error requesting new API key."
+msgstr "Error solicitando nueva clave API."
+
+msgid "Timeout while waiting for API key."
+msgstr "Se agotó el tiempo de espera para la clave de API."

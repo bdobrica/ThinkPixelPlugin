@@ -16,7 +16,7 @@ services:
     container_name: wordpress
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ../../thinkpixel-search-rag:/opt/wordpress/wp-content/plugins/thinkpixel-search-rag
+      - ../../searchpixel:/opt/wordpress/wp-content/plugins/searchpixel
     depends_on:
       - mariadb
       - api

@@ -2,7 +2,7 @@
 <phpunit bootstrap="autoload.php" colors="true">
     <testsuites>
         <testsuite name="Plugin Tests">
-            <directory suffix=".php">plugins/thinkpixel-search-rag/tests</directory>
+            <directory suffix=".php">plugins/searchpixel/tests</directory>
         </testsuite>
     </testsuites>
     <php>

@@ -1,11 +1,11 @@
 # Use a lightweight Debian base image
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 # Set environment variables for non-interactive installations
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Update and install required packages
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx \
     mariadb-client \
     php-fpm \
@@ -18,10 +18,11 @@ RUN apt-get update && apt-get install -y \
     php-zip \
     php-bcmath \
     php-intl \
+    ca-certificates \
     curl \
     tar \
     unzip \
-    && apt-get clean
+    && rm -rf /var/lib/apt/lists/*
 
 # Set up directories
 RUN mkdir -p /var/www/html /opt/wordpress /etc/nginx/conf.d && \

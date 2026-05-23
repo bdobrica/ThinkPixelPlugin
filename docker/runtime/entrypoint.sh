@@ -3,8 +3,19 @@
 # Exit on error
 set -euo pipefail
 
+PHP_VERSION="$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')"
+PHP_FPM_BIN="$(command -v "php-fpm${PHP_VERSION}" || true)"
+
+if [ -z "${PHP_FPM_BIN}" ]; then
+    echo "Unable to find a php-fpm binary for PHP ${PHP_VERSION}" >&2
+    exit 1
+fi
+
+mkdir -p /run/php
+ln -sf "/run/php/php${PHP_VERSION}-fpm.sock" /run/php/php-fpm.sock
+
 # Start PHP-FPM
-php-fpm8.2 -D
+"${PHP_FPM_BIN}" -D
 
 # Wait for MySQL to be ready
 echo "Waiting for MySQL to be ready..."

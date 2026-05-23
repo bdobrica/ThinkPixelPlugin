@@ -1,11 +1,11 @@
 # Use a lightweight Debian base image
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 # Set environment variables for non-interactive installations
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Update and install required packages
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     mariadb-client \
     php-fpm \
     php-mysql \
@@ -17,16 +17,30 @@ RUN apt-get update && apt-get install -y \
     php-zip \
     php-bcmath \
     php-intl \
-    php-dev \
+    ca-certificates \
     curl \
     tar \
     unzip \
-    && apt-get clean
+    && rm -rf /var/lib/apt/lists/*
 
-# Install PECL and runkit7 extension
-RUN apt-get update && apt-get install -y php-pear && \
-    pecl install runkit7-4.0.0a6 && \
-    echo "extension=runkit7.so" > /etc/php/8.2/cli/conf.d/runkit7.ini
+# Install PECL and runkit7 extension when the shipped PHP version supports it.
+RUN php_version_id="$(php -r 'echo PHP_VERSION_ID;')" && \
+    php_version="$(php -r 'echo PHP_VERSION;')" && \
+    if [ "${php_version_id}" -lt 80400 ]; then \
+    apt-get update && apt-get install -y --no-install-recommends \
+    php-dev \
+    php-pear \
+    build-essential \
+    autoconf \
+    pkg-config \
+    && pecl channel-update pecl.php.net \
+    && yes '' | pecl install channel://pecl.php.net/runkit7-4.0.0a6 \
+    && printf '%s\n' 'extension=runkit7.so' > /etc/php/mods-available/runkit7.ini \
+    && phpenmod runkit7 \
+    && rm -rf /var/lib/apt/lists/*; \
+    else \
+    echo "Skipping runkit7 install on PHP ${php_version}: upstream runkit7 4.0.0a6 does not build on PHP 8.4 yet."; \
+    fi
 
 # Install PHPUnit
 RUN curl -L https://phar.phpunit.de/phpunit.phar -o /usr/local/bin/phpunit && \

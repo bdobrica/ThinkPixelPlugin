@@ -16,7 +16,7 @@ services:
       - wordpress
 
   mariadb:
-    image: mariadb:latest
+    image: mariadb:11.4
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: wordpress

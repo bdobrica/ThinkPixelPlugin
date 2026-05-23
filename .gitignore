@@ -59,3 +59,7 @@ wp-config.php
 *.rs.bk
 .env
 *~
+
+# Local PHP test dependencies
+/docker/unit-tests/vendor/
+/vendor

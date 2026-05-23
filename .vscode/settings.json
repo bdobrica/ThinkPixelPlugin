@@ -75,7 +75,6 @@
         "Zend OPcache",
         "zip",
         "zlib",
-        "./runkit7.stub.php",
     ],
     "editor.tabSize": 4,
     "editor.insertSpaces": true,

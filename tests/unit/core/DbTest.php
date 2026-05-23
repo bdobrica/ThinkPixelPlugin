@@ -3,67 +3,101 @@
 use PHPUnit\Framework\TestCase;
 use SearchPixel\Core\Db;
 
-interface WPDBMock
+class WPDBDouble
 {
-    public function get_charset_collate();
-    public function query($sql);
-    public function tables();
-    public function db_version();
-    public function db_server_info();
-    public function suppress_errors();
-    public function get_results($sql);
+    public $prefix = 'wp_';
+    public $posts = 'wp_posts';
+
+    public function query($sql) {}
+
+    public function get_results($sql)
+    {
+        return [];
+    }
+
+    public function prepare($sql, $args)
+    {
+        return $sql;
+    }
 }
 
 class DbTest extends TestCase
 {
+    private $originalWpdb;
     private $wpdbMock;
     private $db;
 
     protected function setUp(): void
     {
         parent::setUp();
-        // Create a mock of the wpdb global object
-        $this->wpdbMock = $this->createMock(WPDBMock::class);
 
-        // Set up expected properties
-        $this->wpdbMock->prefix = 'wp_';
-        $this->wpdbMock->method('get_charset_collate')->willReturn('utf8mb4');
-        $this->wpdbMock->method('tables')->willReturn([]);
+        $this->originalWpdb = $GLOBALS['wpdb'] ?? null;
 
-        // Assign the mock to the global $wpdb
+        $this->wpdbMock = $this->getMockBuilder(WPDBDouble::class)
+            ->onlyMethods(['query', 'get_results', 'prepare'])
+            ->getMock();
+
         $GLOBALS['wpdb'] = $this->wpdbMock;
-
-        // Instantiate the Db class
         $this->db = new Db();
     }
 
     protected function tearDown(): void
     {
-        // Clean up the global $wpdb after each test
-        unset($GLOBALS['wpdb']);
+        $GLOBALS['wpdb'] = $this->originalWpdb;
         parent::tearDown();
     }
 
-    public function testGetTableName()
+    public function testGetPostLogsTableName()
     {
-        $this->assertEquals('wp_searchpixel', $this->db->get_table_name());
+        $this->wpdbMock->expects($this->never())
+            ->method('query');
+
+        $this->assertSame('wp_searchpixel_page_log', $this->db->get_post_logs_table_name());
     }
 
-    public function testCreateTable()
+    public function testGetSearchCacheTableName()
+    {
+        $this->wpdbMock->expects($this->never())
+            ->method('query');
+
+        $this->assertSame('wp_searchpixel_search_cache', $this->db->get_search_cache_table_name());
+    }
+
+    public function testDropTablesDropsBothCustomTables()
     {
         $this->wpdbMock->expects($this->once())
             ->method('query')
-            ->with($this->stringContains('CREATE TABLE'));
+            ->with('DROP TABLE IF EXISTS `wp_searchpixel_page_log`, `wp_searchpixel_search_cache`');
 
-        $this->db->create_table();
+        $this->db->drop_tables();
     }
 
-    public function testDropTable()
+    public function testGetUnprocessedPostsReturnsIntegerIds()
     {
         $this->wpdbMock->expects($this->once())
-            ->method('query')
-            ->with($this->stringContains('DROP TABLE IF EXISTS'));
+            ->method('get_results')
+            ->with('SELECT post_id FROM `wp_searchpixel_page_log` WHERE processed_flag = 0 LIMIT 3')
+            ->willReturn([
+                (object) ['post_id' => '7'],
+                (object) ['post_id' => 9],
+            ]);
 
-        $this->db->drop_table();
+        $this->assertSame([7, 9], $this->db->get_unprocessed_posts(3));
+    }
+
+    public function testMarkProcessedPostsPreparesAndExecutesUpdate()
+    {
+        $preparedSql = 'UPDATE `wp_searchpixel_page_log` SET processed_flag = 1 WHERE post_id IN (4,9)';
+
+        $this->wpdbMock->expects($this->once())
+            ->method('prepare')
+            ->with('UPDATE `wp_searchpixel_page_log` SET processed_flag = 1 WHERE post_id IN (%d,%d)', [4, 9])
+            ->willReturn($preparedSql);
+
+        $this->wpdbMock->expects($this->once())
+            ->method('query')
+            ->with($preparedSql);
+
+        $this->db->mark_processed_posts([4, 9]);
     }
 }

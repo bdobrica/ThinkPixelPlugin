@@ -3,7 +3,12 @@ set -euo pipefail
 
 # Check if the database exists
 echo "Checking if database '${WORDPRESS_DB_NAME}' exists..."
-if ! mysql -u"${WORDPRESS_DB_USER}" -p"${WORDPRESS_DB_PASSWORD}" -h"${WORDPRESS_DB_HOST}" -e "USE ${WORDPRESS_DB_NAME}; SHOW TABLES LIKE 'wp_options';" | grep -q 'wp_options'; then
+database_has_wordpress=false
+if mysql -u"${WORDPRESS_DB_USER}" -p"${WORDPRESS_DB_PASSWORD}" -h"${WORDPRESS_DB_HOST}" -e "USE ${WORDPRESS_DB_NAME}; SHOW TABLES LIKE 'wp_options';" | grep -q 'wp_options'; then
+    database_has_wordpress=true
+fi
+
+if [ ! -f /opt/wordpress/wp-config.php ]; then
     echo "Set up wp-config.php..."
     wp config create --allow-root --path=/opt/wordpress \
         --dbname="${WORDPRESS_DB_NAME}" \
@@ -18,6 +23,12 @@ define('WP_DEBUG_DISPLAY', false);
 define('WP_USE_THEMES', false);
 PHP
 
+    echo "wp-config.php created."
+else
+    echo "wp-config.php already exists."
+fi
+
+if [ "${database_has_wordpress}" != true ]; then
     echo "Database does not exist. Creating database..."
     #wp db create --allow-root --path=/opt/wordpress
 

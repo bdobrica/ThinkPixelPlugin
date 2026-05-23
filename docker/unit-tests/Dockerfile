@@ -3,6 +3,7 @@ FROM debian:trixie-slim
 
 # Set environment variables for non-interactive installations
 ENV DEBIAN_FRONTEND=noninteractive
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Update and install required packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -23,33 +24,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PECL and runkit7 extension when the shipped PHP version supports it.
-RUN php_version_id="$(php -r 'echo PHP_VERSION_ID;')" && \
-    php_version="$(php -r 'echo PHP_VERSION;')" && \
-    if [ "${php_version_id}" -lt 80400 ]; then \
-    apt-get update && apt-get install -y --no-install-recommends \
-    php-dev \
-    php-pear \
-    build-essential \
-    autoconf \
-    pkg-config \
-    && pecl channel-update pecl.php.net \
-    && yes '' | pecl install channel://pecl.php.net/runkit7-4.0.0a6 \
-    && printf '%s\n' 'extension=runkit7.so' > /etc/php/mods-available/runkit7.ini \
-    && phpenmod runkit7 \
-    && rm -rf /var/lib/apt/lists/*; \
-    else \
-    echo "Skipping runkit7 install on PHP ${php_version}: upstream runkit7 4.0.0a6 does not build on PHP 8.4 yet."; \
-    fi
-
-# Install PHPUnit
+# Install PHPUnit and Composer
 RUN curl -L https://phar.phpunit.de/phpunit.phar -o /usr/local/bin/phpunit && \
     chmod +x /usr/local/bin/phpunit
 
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 
 # Set up directories
-RUN mkdir -p /opt/wordpress && \
-    chown -R www-data:www-data /opt/wordpress
+RUN mkdir -p /opt/wordpress /opt/tests && \
+    chown -R www-data:www-data /opt/wordpress /opt/tests
+
+COPY composer.json /opt/tests/composer.json
+RUN composer install --working-dir=/opt/tests --no-interaction --prefer-dist
 
 # Install WordPress CLI
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \

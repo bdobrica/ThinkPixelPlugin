@@ -29,15 +29,18 @@ class Api
     private $last_latency;
     private $post_timeout;
     private $ping_timeout;
+    private $wordpress;
 
     /**
      * Constructor for the Api class.
      *
      * @param callable $get_api_key_callback Callback function to get the API key.
+     * @param WordPressApiInterface|null $wordpress WordPress API adapter for HTTP, transients, and content lookups.
      */
-    public function __construct(callable $get_api_key_callback)
+    public function __construct(callable $get_api_key_callback, ?WordPressApiInterface $wordpress = null)
     {
         $this->get_api_key_callback = $get_api_key_callback;
+        $this->wordpress = $wordpress ?: new WordPressApi();
         $this->last_error = null;
         $this->last_latency = null;
         // Set request timeouts based on server settings.
@@ -66,7 +69,7 @@ class Api
     public function register_site(array $site_stats): array
     {
         // Get the site URL.
-        $site_url = get_site_url();
+        $site_url = $this->wordpress->getSiteUrl();
         // Merge site statistics with domain and path information.
         $site_data = array_merge(
             $site_stats,
@@ -79,7 +82,7 @@ class Api
         // Measure the start time for latency calculation.
         $start_time = microtime(true);
         // Send a POST request to the API to register the site.
-        $response = wp_remote_post(Strings::RegisterEndpoint, [
+        $response = $this->wordpress->remotePost(Strings::RegisterEndpoint, [
             'headers' => ['Content-Type' => 'application/json'],
             'body' => json_encode($site_data),
             'timeout' => $this->post_timeout, // Set the timeout for the request.
@@ -88,12 +91,12 @@ class Api
         $this->last_latency = microtime(true) - $start_time;
 
         // Check if there was an error in the response.
-        if (is_wp_error($response)) {
+        if ($this->wordpress->isWpError($response)) {
             throw new \Exception('Error communicating with API Gateway: ' . $response->get_error_message());
         }
 
         // Decode the response data.
-        $response_data = json_decode(wp_remote_retrieve_body($response), true);
+        $response_data = json_decode($this->wordpress->remoteRetrieveBody($response), true);
         // Validate the response data.
         if (empty($response_data['validation_token']) || empty($response_data['validation_token_expires_at'])) {
             throw new \Exception('Invalid response from API Gateway.');
@@ -111,7 +114,7 @@ class Api
     private function fetch_max_batch_text_size(): int
     {
         $start_time = microtime(true);
-        $response = wp_remote_post(Strings::MaxBatchTextSizeEndpoint, [
+        $response = $this->wordpress->remotePost(Strings::MaxBatchTextSizeEndpoint, [
             'headers' => [
                 "Authorization" => 'Bearer ' . $this->get_jwt(),
                 'Content-Type' => 'application/json',
@@ -127,11 +130,11 @@ class Api
         $max_batch_text_size_expires_at = 2 * HOUR_IN_SECONDS; // Default expiration time.
 
         // Check if the response is an error.
-        if (is_wp_error($response)) {
-            error_log('Error fetching max batch text size: ' . $response->get_error_message());
+        if ($this->wordpress->isWpError($response)) {
+            $this->wordpress->errorLog('Error fetching max batch text size: ' . $response->get_error_message());
         } else {
             // Decode the response body.
-            $body = wp_remote_retrieve_body($response);
+            $body = $this->wordpress->remoteRetrieveBody($response);
             $data = json_decode($body, true);
 
             // Check if the data is valid and contains the max batch text size.
@@ -139,11 +142,11 @@ class Api
                 $max_batch_text_size = (int) $data['max_batch_text_size'];
                 $max_batch_text_size_expires_at = $data['exp'] ? (int) $data['exp'] - time() : 12 * HOUR_IN_SECONDS;
             } else {
-                error_log('Invalid response fetching max batch text size: ' . $body);
+                $this->wordpress->errorLog('Invalid response fetching max batch text size: ' . $body);
             }
         }
 
-        set_transient(Strings::MaxBatchTextSizeTransient, $max_batch_text_size, $max_batch_text_size_expires_at);
+        $this->wordpress->setTransient(Strings::MaxBatchTextSizeTransient, $max_batch_text_size, $max_batch_text_size_expires_at);
         return $max_batch_text_size;
     }
 
@@ -155,7 +158,7 @@ class Api
     private function get_max_batch_text_size(): int
     {
         // Try to get the max batch text size from the transient.
-        $max_batch_text_size = get_transient(Strings::MaxBatchTextSizeTransient);
+        $max_batch_text_size = $this->wordpress->getTransient(Strings::MaxBatchTextSizeTransient);
         if ($max_batch_text_size !== false) {
             return $max_batch_text_size;
         }
@@ -181,9 +184,9 @@ class Api
 
         // Loop through each unprocessed post ID.
         foreach ($unprocessed_ids as $unprocessed_id) {
-            $post = get_post($unprocessed_id); // Get the post object.
-            $title = apply_filters('the_title', $post->post_title); // Apply filters to the post title.
-            $html_content = apply_filters('the_content', $post->post_content); // Apply filters to the post content.
+            $post = $this->wordpress->getPost($unprocessed_id); // Get the post object.
+            $title = $this->wordpress->applyFilters('the_title', $post->post_title); // Apply filters to the post title.
+            $html_content = $this->wordpress->applyFilters('the_content', $post->post_content); // Apply filters to the post content.
             $html_content = $title . PHP_EOL . $html_content; // Combine title and content.
             $md_content = HTML2MD::convert($html_content); // Convert HTML content to Markdown.
             $md_content_size = strlen($md_content); // Get the size of the Markdown content.
@@ -207,7 +210,7 @@ class Api
 
         // Post data to SearchPixel API.
         $start_time = microtime(true); // Record the start time.
-        $response = wp_remote_post(Strings::StoreEndpoint, [
+        $response = $this->wordpress->remotePost(Strings::StoreEndpoint, [
             'body' => json_encode($pages_data), // Encode the data to JSON.
             'headers' => [
                 'Content-Type' => 'application/json',
@@ -218,13 +221,13 @@ class Api
         $this->last_latency = microtime(true) - $start_time; // Calculate the latency.
 
         // Check for WP HTTP errors.
-        if (is_wp_error($response)) {
-            error_log(Strings::PluginName . ' API error: ' . $response->get_error_message());
+        if ($this->wordpress->isWpError($response)) {
+            $this->wordpress->errorLog(Strings::PluginName . ' API error: ' . $response->get_error_message());
             return [];
         }
 
         // Decode the response body.
-        $body = wp_remote_retrieve_body($response);
+        $body = $this->wordpress->remoteRetrieveBody($response);
         $data = json_decode($body, true);
 
         if (isset($data['stored_ids']) && is_array($data['stored_ids']) && count($data['stored_ids']) > 0) {
@@ -233,7 +236,7 @@ class Api
 
         // Check for errors in the response.
         if (isset($data['error'])) {
-            error_log(Strings::PluginName . ' API error: ' . $data['error']);
+            $this->wordpress->errorLog(Strings::PluginName . ' API error: ' . $data['error']);
             return [];
         }
 
@@ -275,7 +278,7 @@ class Api
     {
         // Call SearchPixel API using POST.
         $start_time = microtime(true);
-        $response = wp_remote_post(Strings::SearchEndpoint, [
+        $response = $this->wordpress->remotePost(Strings::SearchEndpoint, [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->get_jwt(),
                 'Content-Type' => 'application/json',
@@ -288,16 +291,16 @@ class Api
         $this->last_latency = microtime(true) - $start_time;
 
         // Handle errors in the response.
-        if (is_wp_error($response)) {
-            error_log('Error calling ' . Strings::PluginName . ' API: ' . $response->get_error_message());
+        if ($this->wordpress->isWpError($response)) {
+            $this->wordpress->errorLog('Error calling ' . Strings::PluginName . ' API: ' . $response->get_error_message());
             return [];
         }
 
-        $body = wp_remote_retrieve_body($response);
+        $body = $this->wordpress->remoteRetrieveBody($response);
         $data = json_decode($body, true);
 
         if (!isset($data) || !is_array($data)) {
-            error_log('Invalid response from ' . Strings::PluginName . ' API.');
+            $this->wordpress->errorLog('Invalid response from ' . Strings::PluginName . ' API.');
             return [];
         }
 
@@ -312,7 +315,7 @@ class Api
     public function refresh_api_key(): ?string
     {
         $start_time = microtime(true);
-        $response = wp_remote_post(Strings::RefreshApiKeyEndpoint, [
+        $response = $this->wordpress->remotePost(Strings::RefreshApiKeyEndpoint, [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->get_jwt(),
                 'Content-Type' => 'application/json',
@@ -323,16 +326,16 @@ class Api
         $this->last_latency = microtime(true) - $start_time;
 
         // Handle errors in the response.
-        if (is_wp_error($response)) {
-            error_log('Error calling ' . Strings::PluginName . ' API: ' . $response->get_error_message());
+        if ($this->wordpress->isWpError($response)) {
+            $this->wordpress->errorLog('Error calling ' . Strings::PluginName . ' API: ' . $response->get_error_message());
             return null;
         }
 
-        $body = wp_remote_retrieve_body($response);
+        $body = $this->wordpress->remoteRetrieveBody($response);
         $data = json_decode($body, true);
 
         if (!isset($data['api_key'])) {
-            error_log('Invalid response from ' . Strings::PluginName . ' API.');
+            $this->wordpress->errorLog('Invalid response from ' . Strings::PluginName . ' API.');
             return null;
         }
 
@@ -353,7 +356,7 @@ class Api
         }
 
         $start_time = microtime(true);
-        $response = wp_remote_post(Strings::AuthTokenEndpoint, [
+        $response = $this->wordpress->remotePost(Strings::AuthTokenEndpoint, [
             'headers' => [
                 'X-API-Key' => $api_key,
             ],
@@ -361,17 +364,17 @@ class Api
         ]);
         $this->last_latency = microtime(true) - $start_time;
 
-        if (is_wp_error($response)) {
+        if ($this->wordpress->isWpError($response)) {
             $this->last_error = new Error(__CLASS__, __FUNCTION__, 'Error fetching JWT: ' . $response->get_error_message());
             return null;
         }
 
-        $body = wp_remote_retrieve_body($response);
+        $body = $this->wordpress->remoteRetrieveBody($response);
         $data = json_decode($body, true);
 
         if (isset($data['token']) && isset($data['exp'])) {
             // Store JWT in a transient for automatic expiration handling.
-            set_transient(Strings::JWTTransient, $data['token'], $data['exp'] - time());
+            $this->wordpress->setTransient(Strings::JWTTransient, $data['token'], $data['exp'] - time());
             $this->last_error = null;
             return $data['token'];
         }
@@ -387,7 +390,7 @@ class Api
      */
     public function get_jwt(): ?string
     {
-        $jwt = get_transient(Strings::JWTTransient);
+        $jwt = $this->wordpress->getTransient(Strings::JWTTransient);
         if ($jwt) return $jwt;
 
         $api_key = call_user_func($this->get_api_key_callback);
@@ -403,12 +406,12 @@ class Api
     public function ping(\WP_REST_Request $request): \WP_REST_Response
     {
         // Send a GET request to the API.
-        $response = wp_remote_get(Strings::PingEndpoint, [
+        $response = $this->wordpress->remoteGet(Strings::PingEndpoint, [
             'timeout' => $this->ping_timeout, // Set the timeout for the request.
         ]);
 
         // Check if there was an error in the response.
-        if (is_wp_error($response)) {
+        if ($this->wordpress->isWpError($response)) {
             return new \WP_REST_Response([
                 'success' => 'false',
                 'message' => 'Error pinging API',
@@ -416,7 +419,7 @@ class Api
         }
 
         // Retrieve and decode the response body.
-        $body = wp_remote_retrieve_body($response);
+        $body = $this->wordpress->remoteRetrieveBody($response);
         $json = json_decode($body, true);
         return new \WP_REST_Response($json, 200);
     }
@@ -425,7 +428,7 @@ class Api
     {
         // Call SearchPixel API using POST.
         $start_time = microtime(true);
-        $response = wp_remote_post(Strings::RemoveItemsFromIndexEndpoint, [
+        $response = $this->wordpress->remotePost(Strings::RemoveItemsFromIndexEndpoint, [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->get_jwt(),
                 'Content-Type' => 'application/json',
@@ -438,12 +441,12 @@ class Api
         $this->last_latency = microtime(true) - $start_time;
 
         // Handle errors in the response.
-        if (is_wp_error($response)) {
-            error_log('Error calling ' . Strings::PluginName . ' API: ' . $response->get_error_message());
+        if ($this->wordpress->isWpError($response)) {
+            $this->wordpress->errorLog('Error calling ' . Strings::PluginName . ' API: ' . $response->get_error_message());
             return [];
         }
 
-        $body = wp_remote_retrieve_body($response);
+        $body = $this->wordpress->remoteRetrieveBody($response);
         $data = json_decode($body, true);
 
         // Maybe the API returns the IDs of the posts that were removed.
@@ -475,6 +478,6 @@ class Api
      */
     public function cleanup(): void
     {
-        delete_transient(Strings::JWTTransient);
+        $this->wordpress->deleteTransient(Strings::JWTTransient);
     }
 }

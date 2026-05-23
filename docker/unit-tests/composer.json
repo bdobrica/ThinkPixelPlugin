@@ -1,0 +1,10 @@
+{
+    "name": "thinkpixel/plugin-unit-tests",
+    "description": "Unit test dependencies for ThinkPixelPlugin.",
+    "require-dev": {
+        "mockery/mockery": "^1.6"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

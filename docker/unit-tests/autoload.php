@@ -1,6 +1,10 @@
 <?php
 $_SERVER['HTTP_HOST'] = 'localhost';
 
+if (file_exists('/opt/tests/vendor/autoload.php')) {
+    require_once('/opt/tests/vendor/autoload.php');
+}
+
 require_once('/opt/wordpress/wp-config.php');
 
 echo '=====================================' . PHP_EOL;

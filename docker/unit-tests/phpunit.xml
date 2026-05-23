@@ -3,6 +3,7 @@
     <testsuites>
         <testsuite name="Plugin Tests">
             <directory suffix=".php">plugins/searchpixel/tests</directory>
+            <exclude>plugins/searchpixel/tests/vendor</exclude>
         </testsuite>
     </testsuites>
     <php>

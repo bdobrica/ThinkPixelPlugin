@@ -1,8 +1,8 @@
 services:
   wordpress-test:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: docker/unit-tests/Dockerfile
     volumes:
       - ../../searchpixel:/opt/wordpress/wp-content/plugins/searchpixel
       - ../../tests:/opt/tests/plugins/searchpixel/tests
@@ -25,7 +25,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      test: [ "CMD-SHELL", "mysqladmin ping -h127.0.0.1 -u\"$${MYSQL_USER}\" -p\"$${MYSQL_PASSWORD}\" --silent" ]
       interval: 1m30s
       timeout: 30s
       retries: 5
@@ -37,7 +37,6 @@ services:
 
 volumes:
   db_data:
-
 
 networks:
   wordpress:

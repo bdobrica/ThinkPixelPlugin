@@ -2,7 +2,7 @@
     "vscode-wordpress-hooks.docBlocks.enable": true,
     "vscode-wordpress-hooks.typeDeclarations.enable": true,
     "intelephense.environment.includePaths": [
-        "docker/unit-tests/vendor"
+        "tests/vendor"
     ],
     "intelephense.stubs": [
         "apache",

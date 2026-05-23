@@ -35,7 +35,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN mkdir -p /opt/wordpress /opt/tests && \
     chown -R www-data:www-data /opt/wordpress /opt/tests
 
-COPY composer.json /opt/tests/composer.json
+COPY tests/composer.json tests/composer.lock /opt/tests/
 RUN composer install --working-dir=/opt/tests --no-interaction --prefer-dist
 
 # Install WordPress CLI
@@ -53,7 +53,7 @@ WORKDIR /opt/wordpress
 RUN wp core download --allow-root --path=/opt/wordpress --locale=en_US
 
 # Add entrypoint script to start all services
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY docker/unit-tests/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Set entrypoint

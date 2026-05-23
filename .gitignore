@@ -61,5 +61,4 @@ wp-config.php
 *~
 
 # Local PHP test dependencies
-/docker/unit-tests/vendor/
-/vendor
+/tests/vendor/

@@ -14,7 +14,7 @@ namespace SearchPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.4.2
+ * @version 1.4.3
  */
 class Strings
 {
@@ -26,7 +26,7 @@ class Strings
     /**
      * The version of the plugin.
      */
-    const PluginVersion = '1.4.2';
+    const PluginVersion = '1.4.3';
 
     /**
      * The plugin identifier.

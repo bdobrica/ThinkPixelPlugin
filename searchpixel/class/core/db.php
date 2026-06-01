@@ -14,7 +14,7 @@ namespace SearchPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.4.2
+ * @version 1.4.3
  */
 class Db
 {
@@ -341,9 +341,9 @@ class Db
         ");
 
         return [
-            'total_pages' => (int) $results->total_pages,
-            'average_size' => (int) $results->average_size,
-            'std_dev_size' => (int) $results->std_dev_size,
+            'estimated_pages' => (int) $results->total_pages,
+            'average_page_size' => (int) $results->average_size,
+            'st_dev_page_size' => (int) $results->std_dev_size,
         ];
     }
 

@@ -1,7 +1,21 @@
 <?php
 
+/**
+ * Core of *
+ */
+
 namespace SearchPixel\Core;
 
+/**
+ * Class WordPressApi
+ *
+ * @category SearchPixel
+ * @package SearchPixel
+ * @subpackage Core
+ * @copyright
+ * @author Bogdan Dobrica <bdobrica @ gmail.com>
+ * @version 1.4.1
+ */
 class WordPressApi implements WordPressApiInterface
 {
     public function getSiteUrl(): string

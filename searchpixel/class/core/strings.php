@@ -14,7 +14,7 @@ namespace SearchPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.4.1
+ * @version 1.4.2
  */
 class Strings
 {
@@ -26,7 +26,7 @@ class Strings
     /**
      * The version of the plugin.
      */
-    const PluginVersion = '1.4.1';
+    const PluginVersion = '1.4.2';
 
     /**
      * The plugin identifier.
@@ -56,7 +56,7 @@ class Strings
     /**
      * The base URL for the SearchPixel API.
      */
-    const ApiUrl = 'https://api.searchpixel.io:8080';
+    const ApiUrl = 'https://api.thinkpixel.io:8080';
 
     /**
      * The translation domain for the plugin.

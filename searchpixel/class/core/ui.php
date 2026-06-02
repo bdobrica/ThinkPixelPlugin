@@ -14,7 +14,7 @@ namespace SearchPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.4.3
+ * @version 1.4.4
  */
 class UI
 {
@@ -360,7 +360,7 @@ class UI
         $max_wait = min(30, max(10, (int)(ini_get('max_execution_time') * 0.5)));
         $start_time = microtime(true);
         while (microtime(true) - $start_time < $max_wait) {
-            $api_key = $this->settings->get_api_key();
+            $api_key = $this->settings->get_api_key(false);
             if ($api_key) {
                 return $api_key;
             }

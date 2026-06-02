@@ -14,7 +14,7 @@ namespace SearchPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.4.3
+ * @version 1.4.4
  */
 class Settings
 {
@@ -48,10 +48,17 @@ class Settings
     /**
      * Retrieves the stored API key from the database.
      *
+     * @param bool $use_cached Whether to use the cached WordPress option value.
      * @return string|null The decrypted API key or null if not found.
      */
-    function get_api_key(): ?string
+    function get_api_key(bool $use_cached = true): ?string
     {
+        if (!$use_cached) {
+            wp_cache_delete('alloptions', 'options');
+            wp_cache_delete(Strings::ApiKeyOption, 'options');
+            wp_cache_delete('notoptions', 'options');
+        }
+
         $stored_value = get_option(Strings::ApiKeyOption);
         if (!$stored_value) return null;
 

@@ -32,9 +32,6 @@ namespace SearchPixel\Core;
             <th scope="row"><?php esc_html_e('Actions', Strings::Domain); ?></th>
             <td>
                 <?php if (! empty($api_key)) : ?>
-                    <button type="submit" name="searchpixel_regenerate_api_key" class="button button-secondary">
-                        <?php esc_html_e('Regenerate API Key', Strings::Domain); ?>
-                    </button>
                     <button type="submit" name="searchpixel_request_new_api_key" class="button button-secondary">
                         <?php esc_html_e('Request New API Key', Strings::Domain); ?>
                     </button>

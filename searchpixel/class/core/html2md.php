@@ -14,7 +14,7 @@ namespace SearchPixel\Core;
  * @subpackage Core
  * @copyright
  * @author Bogdan Dobrica <bdobrica @ gmail.com>
- * @version 1.4.4
+ * @version 1.4.5
  */
 
 class HTML2MD
